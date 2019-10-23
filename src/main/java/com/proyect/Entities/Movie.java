@@ -18,6 +18,7 @@ public class Movie {
 	@GeneratedValue
 	private int id;
 	
+	private String name;
 	private Time duration;
 	
 	@OneToMany(mappedBy = "movie")
@@ -25,6 +26,14 @@ public class Movie {
 	
 	public int getid() {
 		return id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public void setid(int id) {

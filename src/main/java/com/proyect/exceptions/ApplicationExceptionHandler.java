@@ -18,4 +18,11 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 		errors.setDate(new Date());
 		return new ResponseEntity<ApplicationErrors>(errors, HttpStatus.UNAUTHORIZED);
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApplicationErrors> handleNoTimeAvailableException(NoTimeAvailableException ex, WebRequest webRequest) {
+		ApplicationErrors errors = new ApplicationErrors(ex.toString(), "400");
+		errors.setDate(new Date());
+		return new ResponseEntity<ApplicationErrors>(errors, HttpStatus.BAD_REQUEST);
+	}
 }

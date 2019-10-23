@@ -1,12 +1,15 @@
 package com.proyect.Entities;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -29,6 +32,8 @@ public class Play {
 	@JoinColumn(name = "sala_id")
 	private Sala sala;
 
+	@OneToMany(mappedBy = "play")
+	private List<Book> books = new ArrayList<>();
 	public Play() {}
 	
 	public Play(PlayPK playPK, Date endTime, int availableSeats, Movie movie, Sala sala) {
@@ -80,11 +85,11 @@ public class Play {
 		this.sala = sala;
 	}
 
-//	public List<Book> getBooks() {
-//		return books;
-//	}
-//
-//	public void setBooks(List<Book> books) {
-//		this.books = books;
-//	}
+	public List<Book> getBooks() {
+		return books;
+	}
+
+	public void setBooks(List<Book> books) {
+		this.books = books;
+	}
 }

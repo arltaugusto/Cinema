@@ -59,5 +59,6 @@ public class PlayController {
 				throw new NoTimeAvailableException(play);
 			}
 		}
+		
 	}
 }

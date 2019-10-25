@@ -25,4 +25,11 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 		errors.setDate(new Date());
 		return new ResponseEntity<ApplicationErrors>(errors, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApplicationErrors> handleSeatAlreadyBookedException(SeatAlreadyBookedException ex, WebRequest webRequest) {
+		ApplicationErrors errors = new ApplicationErrors(ex.toString(), "400");
+		errors.setDate(new Date());
+		return new ResponseEntity<ApplicationErrors>(errors, HttpStatus.BAD_REQUEST);
+	}
 }

@@ -19,11 +19,18 @@ public class Movie {
 	private int id;
 	
 	private String name;
-	private Time duration;
+	private long duration;
 	
 	@OneToMany(mappedBy = "movie")
 	private List<Play> plays = new ArrayList<>();
 	
+	public Movie(int id, String name, long duration) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.duration = duration * 60 *1000;
+	}
+
 	public int getid() {
 		return id;
 	}
@@ -40,11 +47,11 @@ public class Movie {
 		this.id = id;
 	}
 
-	public Time getDuration() {
+	public long getDuration() {
 		return duration;
 	}
 
-	public void setDuration(Time duration) {
+	public void setDuration(long duration) {
 		this.duration = duration;
 	}
 

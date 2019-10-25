@@ -40,9 +40,9 @@ public class PlayController {
 	public @ResponseBody ResponseEntity<String> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException {
 		Movie movie = movieRepository.findById(playPk.getMovieId()).get();
 		Sala sala = salaRepository.findById(playPk.getSalaId()).get();
-		Long time = playPk.getStartTime().getTime() + movie.getDuration().getTime();
+		Long time = playPk.getStartTime().getTime() + movie.getDuration();
 		Date endTime = new Date(time);
-		Play play = new Play(playPk, endTime, 30, movie, sala);
+		Play play = new Play(playPk, endTime, 60, movie, sala);
 		isSalaAvailable(play);
 		playRepository.save(play);
 		return new ResponseEntity<String>("Success", HttpStatus.OK);

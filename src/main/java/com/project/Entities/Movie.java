@@ -24,6 +24,7 @@ public class Movie {
 	private List<Play> plays = new ArrayList<>();
 	
 	public Movie() {};
+
 	public Movie(int id, String name, long duration) {
 		this.id = id;
 		this.name = name;
@@ -34,6 +35,14 @@ public class Movie {
 		return id;
 	}
 
+	public List<Play> getPlays() {
+		return plays;
+	}
+	
+	public void setPlays(List<Play> plays) {
+		this.plays = plays;
+	}
+	
 	public String getName() {
 		return name;
 	}

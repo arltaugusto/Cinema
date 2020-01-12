@@ -66,6 +66,20 @@ public class BookController {
 		return new ResponseEntity<Iterable<Booking>>(userRepository.findById(id).get().getBooks(), HttpStatus.OK);
 	}
 	
+	@PostMapping(path = "/delete")
+	public @ResponseBody ResponseEntity<String> deleteBooking(@RequestBody Booking book) {
+		Optional<Booking> bookingOptional = bookRepository.findById(book.getBookId());
+		if(bookingOptional.isPresent()) {
+			Booking booking = bookingOptional.get();
+			Play play = booking.getPlay();
+			play.setAvailableSeats(play.getAvailableSeats() + booking.getSeats().size());
+			playRepository.save(play);
+			bookRepository.delete(book);
+			return new ResponseEntity<String>("Deleted", HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("No booking found", HttpStatus.BAD_REQUEST);
+	}
+
 	private void checkSeatAvailability(List<Seat> seats, Play play) throws SeatAlreadyBookedException {
 		List<Seat> seatsAlreadyBooked = new ArrayList<>();
 		List<Booking> bookings = play.getBooks();

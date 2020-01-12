@@ -2,6 +2,7 @@ package com.project.Cinema;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.project.Entities.Booking;
 import com.project.Entities.Movie;
 import com.project.Entities.Play;
 import com.project.Entities.PlayPK;
@@ -47,6 +49,18 @@ public class PlayController {
 		return new ResponseEntity<String>("Success", HttpStatus.OK);
 	}
 	
+	@PostMapping(path = "/delete")
+	public @ResponseBody ResponseEntity<String> deletePlay(@RequestBody PlayPK playPk) {
+		Optional<Play> playOptional = playRepository.findById(playPk);
+		if(playOptional.isPresent()) {
+			Play play = playOptional.get();
+			bookRepository.deleteAll(play.getBooks());
+			playRepository.delete(play);
+			return new ResponseEntity<String>("Deleted", HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("Play not Found", HttpStatus.BAD_REQUEST);
+	}
+	
 	private void isSalaAvailable(Play play) throws NoTimeAvailableException {
 		LocalDateTime newStartTime = play.getPlayPK().getStartTime();
 		LocalDateTime newEndTime = play.getEndTime();
@@ -58,6 +72,5 @@ public class PlayController {
 				throw new NoTimeAvailableException(play);
 			}
 		}
-		
 	}
 }

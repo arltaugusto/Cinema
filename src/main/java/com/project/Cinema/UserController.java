@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.project.Entities.User;
 import com.project.Repositories.UserRepository;
+import com.project.exceptions.EmailUnavailableException;
 import com.project.exceptions.InvalidCredentialsException;
+import com.project.utils.BasicEntitySaver;
 
 
 @Controller
@@ -29,17 +31,23 @@ public class UserController {
 	private static final String invalidCredentialsMessage = "Invalid Username or password";
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<String> addNewUser (@RequestBody User user) {
-		userRepository.save(user);
-		return new ResponseEntity<String>("Saved", HttpStatus.OK);
+	public @ResponseBody ResponseEntity<String> addNewUser (@RequestBody User user) throws EmailUnavailableException {
+		checkEmailStatus(user);
+		return BasicEntitySaver.save(user, userRepository);
 	}
 	
+	private void checkEmailStatus(User user) throws EmailUnavailableException {
+		Optional<User> us = userRepository.findByEmail(user.getEmail());
+		if(us.isPresent()) {
+			throw new EmailUnavailableException(user);
+		}
+	}
+
 	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<String> modifyUser (@RequestBody User user) {
-		userRepository.save(user);
-		return new ResponseEntity<String>("Saved", HttpStatus.OK);
+		return BasicEntitySaver.save(user, userRepository);
 	}
-	
+
 	@PostMapping(path="/login", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<User> login (@RequestBody User user) throws InvalidCredentialsException {
 		Optional<User> u = userRepository.findByEmailInAndPasswordIn(user.getEmail(), user.getPassword());
@@ -54,7 +62,6 @@ public class UserController {
 	
 	@GetMapping(path="/all")
 	public @ResponseBody Iterable<User> getAllUsers() {
-		// This returns a JSON or XML with the users
 		return userRepository.findAll();
 	}
 }

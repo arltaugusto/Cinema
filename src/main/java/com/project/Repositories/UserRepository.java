@@ -9,4 +9,6 @@ import com.project.Entities.User;
 public interface UserRepository extends JpaRepository<User, String> {
 	
 	Optional<User> findByEmailInAndPasswordIn(String email, String password);
+	Optional<User> findByEmail(String email);
+
 }

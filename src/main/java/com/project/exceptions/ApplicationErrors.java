@@ -1,11 +1,11 @@
 package com.project.exceptions;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class ApplicationErrors {
 
 		private String message;
-		private Date date;
+		private LocalDateTime date;
 		private String code;
 		
 		public ApplicationErrors(String message, String code) {
@@ -19,10 +19,10 @@ public class ApplicationErrors {
 		public void setMessage(String message) {
 			this.message = message;
 		}
-		public Date getDate() {
+		public LocalDateTime getDate() {
 			return date;
 		}
-		public void setDate(Date date) {
+		public void setDate(LocalDateTime date) {
 			this.date = date;
 		}
 		public String getCode() {
@@ -31,5 +31,4 @@ public class ApplicationErrors {
 		public void setCode(String code) {
 			this.code = code;
 		}
-		
 }

@@ -27,6 +27,7 @@ public class User {
 	private String userId;
 	private String email;
 	private String name;
+	private Boolean isAdmin;
 	
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;

@@ -1,6 +1,5 @@
 package com.proyect.Cinema;
 
-
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +40,10 @@ public class UserController {
 	
 	@PostMapping(path="/login", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
 	public @ResponseBody String login (@RequestBody User user) throws InvalidCredentialsException {
-		Optional<User> u = userRepository.findByEmail(user.getEmail());
-		User us = new User();
+		Optional<User> u = userRepository.findByEmailAndPassword(user.getEmail(), user.getPassword());
 		try {
-			us = u.get();
+			u.get();
 		} catch (Exception e) {
-			throw new InvalidCredentialsException(invalidCredentialsMessage);
-		}
-		if (!user.getPassword().equals(us.getPassword())) {
 			throw new InvalidCredentialsException(invalidCredentialsMessage);
 		}
 		return "Login Success";

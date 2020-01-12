@@ -1,7 +1,8 @@
-package com.proyect.Entities;
+package com.project.Entities;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.sql.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -15,7 +16,7 @@ public class PlayPK implements Serializable {
 	private int salaId;
 	
 	@Column(name = "startTime")
-	private Date startTime;
+	private LocalDateTime startTime;
 	
 	public int getMovieId() {
 		return movieId;
@@ -33,11 +34,11 @@ public class PlayPK implements Serializable {
 		this.salaId = salaId;
 	}
 
-	public Date getStartTime() {
+	public LocalDateTime getStartTime() {
 		return startTime;
 	}
 
-	public void setStartTime(Date startTime) {
+	public void setStartTime(LocalDateTime startTime) {
 		this.startTime = startTime;
 	}
 

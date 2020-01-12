@@ -1,9 +1,9 @@
-package com.proyect.Repositories;
+package com.project.Repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.proyect.Entities.Seat;
-import com.proyect.Entities.SeatPK;
+import com.project.Entities.Seat;
+import com.project.Entities.SeatPK;
 
 public interface SeatRepository extends JpaRepository<Seat, SeatPK> {
 

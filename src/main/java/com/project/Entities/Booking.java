@@ -1,7 +1,7 @@
-package com.proyect.Entities;
+package com.project.Entities;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -16,13 +16,13 @@ import javax.persistence.Table;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "books")
-public class Book {
+@Table(name = "bookings")
+public class Booking {
 	
 	@Id
 	@GeneratedValue
 	private int bookId;
-	private Date bookDate;
+	private LocalDateTime bookDate;
 	
 	@ManyToOne
 	@JoinColumn(name="userId")
@@ -41,6 +41,14 @@ public class Book {
 	@ManyToMany
 	private List<Seat> seats = new ArrayList<>();
 	
+	public Booking() {};
+	
+	public Booking(User user, Play play, List<Seat> seats) {
+		this.user = user;
+		this.play = play;
+		this.seats = seats;
+		this.bookDate = LocalDateTime.now();
+	}
 	
 	public List<Seat> getSeats() {
 		return seats;
@@ -66,11 +74,11 @@ public class Book {
 		this.bookId = bookId;
 	}
 
-	public Date getBookDate() {
+	public LocalDateTime getBookDate() {
 		return bookDate;
 	}
 
-	public void setBookDate(Date bookDate) {
+	public void setBookDate(LocalDateTime bookDate) {
 		this.bookDate = bookDate;
 	}
 

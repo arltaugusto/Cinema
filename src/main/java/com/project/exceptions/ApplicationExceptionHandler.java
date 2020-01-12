@@ -1,4 +1,4 @@
-package com.proyect.exceptions;
+package com.project.exceptions;
 
 import java.util.Date;
 
@@ -21,13 +21,20 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 	
 	@ExceptionHandler
 	public ResponseEntity<ApplicationErrors> handleNoTimeAvailableException(NoTimeAvailableException ex, WebRequest webRequest) {
-		ApplicationErrors errors = new ApplicationErrors(ex.toString(), "400");
-		errors.setDate(new Date());
-		return new ResponseEntity<ApplicationErrors>(errors, HttpStatus.BAD_REQUEST);
+		return badRequestException(ex, webRequest);
 	}
 	
 	@ExceptionHandler
 	public ResponseEntity<ApplicationErrors> handleSeatAlreadyBookedException(SeatAlreadyBookedException ex, WebRequest webRequest) {
+		return badRequestException(ex, webRequest);
+	}
+	
+	@ExceptionHandler
+	public ResponseEntity<ApplicationErrors> handleNoSeatBookedException(NoSeatBookedException ex, WebRequest webRequest) {
+		return badRequestException(ex, webRequest);
+	}
+	
+	private ResponseEntity<ApplicationErrors> badRequestException(Exception ex, WebRequest webRequest) {
 		ApplicationErrors errors = new ApplicationErrors(ex.toString(), "400");
 		errors.setDate(new Date());
 		return new ResponseEntity<ApplicationErrors>(errors, HttpStatus.BAD_REQUEST);

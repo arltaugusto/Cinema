@@ -1,4 +1,4 @@
-package com.proyect.Entities;
+package com.project.Entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,9 +9,12 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.GenericGenerator;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.project.utils.IdGenerator;
 
 
 @Entity
@@ -19,8 +22,9 @@ import com.fasterxml.jackson.annotation.JsonProperty.Access;
 public class User {
 	
 	@Id
-	@GeneratedValue
-	private int userId;
+    @GeneratedValue(generator = IdGenerator.generatorName)
+    @GenericGenerator(name = IdGenerator.generatorName, strategy = "com.project.utils.IdGenerator")
+	private String userId;
 	private String email;
 	private String name;
 	
@@ -28,7 +32,7 @@ public class User {
 	private String password;
 	
 	@OneToMany(mappedBy = "user")
-	private List<Book> books = new ArrayList<>();
+	private List<Booking> books = new ArrayList<>();
 	
 	public String getEmail() {
 		return email;
@@ -50,16 +54,16 @@ public class User {
 		this.password = password;
 	}
 	
-	public int getId() {
+	public String getId() {
 		return userId;
 	}
-	public void setId(int userId) {
+	public void setId(String userId) {
 		this.userId = userId;
 	}
-	public List<Book> getBooks() {
+	public List<Booking> getBooks() {
 		return books;
 	}
-	public void setBooks(List<Book> books) {
+	public void setBooks(List<Booking> books) {
 		this.books = books;
 	}
 }

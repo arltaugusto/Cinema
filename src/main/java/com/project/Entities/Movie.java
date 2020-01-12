@@ -1,6 +1,5 @@
-package com.proyect.Entities;
+package com.project.Entities;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,11 +23,11 @@ public class Movie {
 	@OneToMany(mappedBy = "movie")
 	private List<Play> plays = new ArrayList<>();
 	
+	public Movie() {};
 	public Movie(int id, String name, long duration) {
-		super();
 		this.id = id;
 		this.name = name;
-		this.duration = duration * 60 *1000;
+		this.duration = duration;
 	}
 
 	public int getid() {

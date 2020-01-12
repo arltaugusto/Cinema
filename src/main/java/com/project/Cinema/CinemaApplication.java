@@ -1,4 +1,4 @@
-package com.proyect.Cinema;
+package com.project.Cinema;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -7,9 +7,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@ComponentScan({"com.proyect.Cinema","com.proyect.requestObjects","com.proyect.exceptions"})
-@EntityScan("com.proyect.Entities")
-@EnableJpaRepositories("com.proyect.Repositories")
+@ComponentScan({"com.project.Cinema","com.project.requestObjects","com.project.exceptions", "com.project.utils"})
+@EntityScan("com.project.Entities")
+@EnableJpaRepositories("com.project.Repositories")
 public class CinemaApplication {
 
 	public static void main(String[] args) {

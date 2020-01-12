@@ -1,4 +1,4 @@
-package com.proyect.exceptions;
+package com.project.exceptions;
 
 import java.util.Date;
 

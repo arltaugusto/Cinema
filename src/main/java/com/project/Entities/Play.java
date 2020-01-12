@@ -1,5 +1,6 @@
-package com.proyect.Entities;
+package com.project.Entities;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,7 @@ public class Play {
 	@EmbeddedId
 	private PlayPK playPK;
 	
-	private Date endTime;
+	private LocalDateTime endTime;
 	private int availableSeats;
 	
 	@MapsId("MovieId")
@@ -33,10 +34,10 @@ public class Play {
 	private Sala sala;
 
 	@OneToMany(mappedBy = "play")
-	private List<Book> books = new ArrayList<>();
+	private List<Booking> books = new ArrayList<>();
 	public Play() {}
 	
-	public Play(PlayPK playPK, Date endTime, int availableSeats, Movie movie, Sala sala) {
+	public Play(PlayPK playPK, LocalDateTime endTime, int availableSeats, Movie movie, Sala sala) {
 		super();
 		this.playPK = playPK;
 		this.endTime = endTime;
@@ -45,11 +46,11 @@ public class Play {
 		this.sala = sala;
 	}
 
-	public Date getEndTime() {
+	public LocalDateTime getEndTime() {
 		return endTime;
 	}
 
-	public void setEndTime(Date endTime) {
+	public void setEndTime(LocalDateTime endTime) {
 		this.endTime = endTime;
 	}
 
@@ -85,11 +86,11 @@ public class Play {
 		this.sala = sala;
 	}
 
-	public List<Book> getBooks() {
+	public List<Booking> getBooks() {
 		return books;
 	}
 
-	public void setBooks(List<Book> books) {
+	public void setBooks(List<Booking> books) {
 		this.books = books;
 	}
 }

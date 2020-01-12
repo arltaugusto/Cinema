@@ -1,10 +1,10 @@
-package com.proyect.exceptions;
+package com.project.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.proyect.Entities.Play;
-import com.proyect.Entities.PlayPK;
+import com.project.Entities.Play;
+import com.project.Entities.PlayPK;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class NoTimeAvailableException extends Exception {

@@ -1,4 +1,4 @@
-package com.proyect.Entities;
+package com.project.Entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +26,7 @@ public class Seat {
 	 
 	@ManyToMany
 	@JsonIgnore
-	private List<Book> books = new ArrayList<>();
+	private List<Booking> books = new ArrayList<>();
 	 
 
 	public SeatPK getSeatPk() {
@@ -45,11 +45,11 @@ public class Seat {
 		this.sala = sala;
 	}
 
-	public List<Book> getBooks() {
+	public List<Booking> getBooks() {
 		return books;
 	}
 
-	public void setBooks(List<Book> books) {
+	public void setBooks(List<Booking> books) {
 		this.books = books;
 	}
 

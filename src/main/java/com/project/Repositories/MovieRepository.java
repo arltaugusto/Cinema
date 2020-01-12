@@ -1,8 +1,8 @@
-package com.proyect.Repositories;
+package com.project.Repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.proyect.Entities.Movie;
+import com.project.Entities.Movie;
 
 public interface MovieRepository extends JpaRepository<Movie, Integer> {
 	

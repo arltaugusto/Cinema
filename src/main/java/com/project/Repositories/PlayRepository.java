@@ -1,9 +1,9 @@
-package com.proyect.Repositories;
+package com.project.Repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.proyect.Entities.Play;
-import com.proyect.Entities.PlayPK;
+import com.project.Entities.Play;
+import com.project.Entities.PlayPK;
 
 public interface PlayRepository extends JpaRepository<Play, PlayPK> {
 

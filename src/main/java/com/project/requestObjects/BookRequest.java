@@ -1,14 +1,13 @@
-package com.proyect.requestObjects;
+package com.project.requestObjects;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.proyect.Entities.Book;
-import com.proyect.Entities.PlayPK;
+import com.project.Entities.PlayPK;
 
 public class BookRequest {
-	private Book book;
-	private int userId;
+//	private Book book;
+	private String userId;
 	private PlayPK playPk;
 	private List<Integer> seats = new ArrayList<>();
 	
@@ -24,16 +23,16 @@ public class BookRequest {
 	public void setPlayPk(PlayPK playPk) {
 		this.playPk = playPk;
 	}
-	public Book getBook() {
-		return book;
-	}
-	public void setBook(Book book) {
-		this.book = book;
-	}
-	public int getUserId() {
+//	public Book getBook() {
+//		return book;
+//	}
+//	public void setBook(Book book) {
+//		this.book = book;
+//	}
+	public String getUserId() {
 		return userId;
 	}
-	public void setUserId(int userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 }

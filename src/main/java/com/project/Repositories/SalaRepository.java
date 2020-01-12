@@ -1,8 +1,8 @@
-package com.proyect.Repositories;
+package com.project.Repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.proyect.Entities.Sala;
+import com.project.Entities.Sala;
 
 public interface SalaRepository extends JpaRepository<Sala, Integer> {
 

@@ -25,8 +25,6 @@ import com.proyect.Repositories.BookRepository;
 import com.proyect.Repositories.PlayRepository;
 import com.proyect.Repositories.SeatRepository;
 import com.proyect.Repositories.UserRepository;
-import com.proyect.exceptions.ApplicationErrors;
-import com.proyect.exceptions.SeatAlreadyBookedException;
 import com.proyect.requestObjects.BookRequest;
 
 @RestController
@@ -40,7 +38,7 @@ public class BookController {
 	@Autowired private SeatRepository seatRepository;
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<String> addNewBook (@RequestBody BookRequest bookRequest) throws SeatAlreadyBookedException {
+	public @ResponseBody ResponseEntity<String> addNewBook (@RequestBody BookRequest bookRequest) {
 		Book book = bookRequest.getBook();
 		Play p = playRepository.findById(bookRequest.getPlayPk()).get();
 		User u = userRepository.findById(bookRequest.getUserId()).get();
@@ -65,12 +63,12 @@ public class BookController {
 		return new ResponseEntity<Iterable<Book>>(userRepository.findById(id).get().getBooks(), HttpStatus.OK);
 	}
 	
-	private void checkSeatAvailability(List<Seat> seats, Play play) throws SeatAlreadyBookedException {
+	private void checkSeatAvailability(List<Seat> seats, Play play) {
 		List<Book> bookings = play.getBooks();
 		for (Seat seat : seats) {
 			for (Book book : bookings) {
 				if(book.getSeats().contains(seat)) {
-					throw new SeatAlreadyBookedException(seat);
+//					throw new SeatAlreadyBookedException(seat);
 				}
 			}
 		}

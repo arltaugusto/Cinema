@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "movies")
 public class Movie {
@@ -21,6 +23,7 @@ public class Movie {
 	private long duration;
 	
 	@OneToMany(mappedBy = "movie")
+	@JsonIgnore
 	private List<Play> plays = new ArrayList<>();
 	
 	public Movie() {};

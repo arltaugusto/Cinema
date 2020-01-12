@@ -3,18 +3,19 @@ package com.project.Cinema;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.Entities.Booking;
 import com.project.Entities.Movie;
 import com.project.Entities.Play;
 import com.project.Entities.PlayPK;
@@ -47,6 +48,15 @@ public class PlayController {
 		isSalaAvailable(play);
 		playRepository.save(play);
 		return new ResponseEntity<String>("Success", HttpStatus.OK);
+	}
+	
+	@GetMapping(path="/all", consumes = "application/json", produces = "application/json")
+	public @ResponseBody ResponseEntity<List<Play>> getPlays (@RequestBody PlayPK playPk) throws NoTimeAvailableException {
+		return new ResponseEntity<List<Play>>(playRepository.findAll().stream()
+				.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now()))
+				.collect(Collectors.toList()),
+				HttpStatus.OK);
+				
 	}
 	
 	@PostMapping(path = "/delete")

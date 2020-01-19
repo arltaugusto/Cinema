@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 
 public interface BasicEntitySaver {
 	
-	public static <U> ResponseEntity<String> save(U entity, JpaRepository<U, ?> repository) {
+	public static <U> ResponseEntity<U> save(U entity, JpaRepository<U, ?> repository) {
 		repository.save(entity);
-		return new ResponseEntity<String>("Saved", HttpStatus.OK);
+		return new ResponseEntity<U>(entity, HttpStatus.OK);
 	}
 }

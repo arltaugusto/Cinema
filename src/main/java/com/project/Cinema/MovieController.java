@@ -33,12 +33,12 @@ public class MovieController {
 	private PlayRepository playRepository;
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<String> addNewMovie (@RequestBody Movie movie) {
+	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestBody Movie movie) {
 		return BasicEntitySaver.save(movie, movieRepository);
 	}
 	
 	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<String> modifyMovie (@RequestBody Movie movie) {
+	public @ResponseBody ResponseEntity<Movie> modifyMovie (@RequestBody Movie movie) {
 		return BasicEntitySaver.save(movie, movieRepository);
 	}
 	

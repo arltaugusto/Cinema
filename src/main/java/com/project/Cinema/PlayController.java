@@ -26,6 +26,7 @@ import com.project.Repositories.PlayRepository;
 import com.project.Repositories.SalaRepository;
 import com.project.Repositories.UserRepository;
 import com.project.exceptions.NoTimeAvailableException;
+import com.project.utils.BasicEntitySaver;
 
 @RestController
 @CrossOrigin
@@ -37,26 +38,24 @@ public class PlayController {
 	@Autowired private PlayRepository playRepository;
 	@Autowired private SalaRepository salaRepository;
 	@Autowired private MovieRepository movieRepository;
-
+	private static final long minutesBeforeMovie = 15; 
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<String> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException {
+	public @ResponseBody ResponseEntity<Play> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException {
 		Movie movie = movieRepository.findById(playPk.getMovieId()).get();
 		Sala sala = salaRepository.findById(playPk.getSalaId()).get();
 		LocalDateTime endTime = playPk.getStartTime().plusMinutes(movie.getDuration());
 		Play play = new Play(playPk, endTime, 60, movie, sala);
 		isSalaAvailable(play);
-		playRepository.save(play);
-		return new ResponseEntity<String>("Success", HttpStatus.OK);
+		return BasicEntitySaver.save(play, playRepository);
 	}
 	
 	@GetMapping(path="/all", consumes = "application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<List<Play>> getPlays (@RequestBody PlayPK playPk) throws NoTimeAvailableException {
 		return new ResponseEntity<List<Play>>(playRepository.findAll().stream()
-				.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now()))
+				.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now().plusMinutes(minutesBeforeMovie)))
 				.collect(Collectors.toList()),
 				HttpStatus.OK);
-				
 	}
 	
 	@PostMapping(path = "/delete")

@@ -31,7 +31,7 @@ public class UserController {
 	private static final String invalidCredentialsMessage = "Invalid Username or password";
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<String> addNewUser (@RequestBody User user) throws EmailUnavailableException {
+	public @ResponseBody ResponseEntity<User> addNewUser (@RequestBody User user) throws EmailUnavailableException {
 		checkEmailStatus(user);
 		return BasicEntitySaver.save(user, userRepository);
 	}
@@ -44,7 +44,7 @@ public class UserController {
 	}
 
 	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<String> modifyUser (@RequestBody User user) {
+	public @ResponseBody ResponseEntity<User> modifyUser (@RequestBody User user) {
 		return BasicEntitySaver.save(user, userRepository);
 	}
 

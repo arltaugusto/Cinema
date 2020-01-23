@@ -1,14 +1,13 @@
 package com.project.exceptions;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.project.Entities.Seat;
-import com.project.Entities.SeatPK;
+import com.project.entities.Seat;
+import com.project.entities.SeatPK;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class SeatAlreadyBookedException extends Exception {
@@ -16,7 +15,7 @@ public class SeatAlreadyBookedException extends Exception {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private List<Seat> busySeats = new ArrayList<>();
+	private final transient  List<Seat> busySeats;
 
 	public SeatAlreadyBookedException(List<Seat> seats) {
 		super();
@@ -27,17 +26,13 @@ public class SeatAlreadyBookedException extends Exception {
 		return busySeats;
 	}
 
-	public void setSeat(List<Seat> seat) {
-		this.busySeats = seat;
-	}
-	
 	@Override
 	public String toString() {
 		return String.format("%s already booked",
 				busySeats.stream()
 					.map(Seat::getSeatPk)
 					.map(SeatPK::getSeatId)
-					.map(id -> Integer.toString(id))
+					.map(String::valueOf)
 					.collect(Collectors.joining(", ")));
 	}
 }

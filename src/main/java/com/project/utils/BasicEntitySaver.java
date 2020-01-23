@@ -8,6 +8,6 @@ public interface BasicEntitySaver {
 	
 	public static <U> ResponseEntity<U> save(U entity, JpaRepository<U, ?> repository) {
 		repository.save(entity);
-		return new ResponseEntity<U>(entity, HttpStatus.OK);
+		return new ResponseEntity<>(entity, HttpStatus.OK);
 	}
 }

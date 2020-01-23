@@ -1,4 +1,4 @@
-package com.project.Cinema;
+package com.project.cinema;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +17,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.Entities.Booking;
-import com.project.Entities.Play;
-import com.project.Entities.Seat;
-import com.project.Entities.SeatPK;
-import com.project.Entities.User;
-import com.project.Repositories.BookRepository;
-import com.project.Repositories.PlayRepository;
-import com.project.Repositories.SeatRepository;
-import com.project.Repositories.UserRepository;
+import com.project.entities.Booking;
+import com.project.entities.Play;
+import com.project.entities.Seat;
+import com.project.entities.SeatPK;
+import com.project.entities.User;
 import com.project.exceptions.NoSeatBookedException;
 import com.project.exceptions.SeatAlreadyBookedException;
-import com.project.requestObjects.BookRequest;
+import com.project.repositories.BookRepository;
+import com.project.repositories.PlayRepository;
+import com.project.repositories.SeatRepository;
+import com.project.repositories.UserRepository;
+import com.project.requestobjects.BookRequestDTO;
+import com.project.requestobjects.BookingDTO;
 
 @RestController
 @CrossOrigin
@@ -41,9 +42,10 @@ public class BookController {
 	@Autowired private SeatRepository seatRepository;
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<Booking> addNewBook (@RequestBody BookRequest bookRequest) throws SeatAlreadyBookedException, NoSeatBookedException {
+	public @ResponseBody ResponseEntity<Booking> addNewBook (@RequestBody BookRequestDTO bookRequest) throws SeatAlreadyBookedException, NoSeatBookedException {
 		Play play = playRepository.findById(bookRequest.getPlayPk()).get();
 		User user = userRepository.findById(bookRequest.getUserId()).get();
+		
 		int sala = bookRequest.getPlayPk().getSalaId();
 		List<Seat> seats = bookRequest.getSeats().stream()
 			.map(num -> new SeatPK(sala, num))
@@ -58,26 +60,26 @@ public class BookController {
 		Booking booking = new Booking(user, play, seats);
 		playRepository.save(play);
 		bookRepository.save(booking);
-		return new ResponseEntity<Booking>(booking, HttpStatus.OK);
+		return new ResponseEntity<>(booking, HttpStatus.OK);
 	}
 	
 	@GetMapping(path="/{id}")
 	public @ResponseBody ResponseEntity<Iterable<Booking>> getUserBooks(@PathVariable("id") String id) {
-		return new ResponseEntity<Iterable<Booking>>(userRepository.findById(id).get().getBooks(), HttpStatus.OK);
+		return new ResponseEntity<>(userRepository.findById(id).get().getBooks(), HttpStatus.OK);
 	}
 	
 	@PostMapping(path = "/delete")
-	public @ResponseBody ResponseEntity<String> deleteBooking(@RequestBody Booking book) {
+	public @ResponseBody ResponseEntity<String> deleteBooking(@RequestBody BookingDTO book) {
 		Optional<Booking> bookingOptional = bookRepository.findById(book.getBookId());
 		if(bookingOptional.isPresent()) {
 			Booking booking = bookingOptional.get();
 			Play play = booking.getPlay();
 			play.setAvailableSeats(play.getAvailableSeats() + booking.getSeats().size());
 			playRepository.save(play);
-			bookRepository.delete(book);
-			return new ResponseEntity<String>("Deleted", HttpStatus.OK);
+			bookRepository.delete(booking);
+			return new ResponseEntity<>("Deleted", HttpStatus.OK);
 		}
-		return new ResponseEntity<String>("No booking found", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>("No booking found", HttpStatus.BAD_REQUEST);
 	}
 
 	private void checkSeatAvailability(List<Seat> seats, Play play) throws SeatAlreadyBookedException {

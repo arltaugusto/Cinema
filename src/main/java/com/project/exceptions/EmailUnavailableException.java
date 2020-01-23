@@ -1,27 +1,25 @@
 package com.project.exceptions;
 
-import com.project.Entities.User;
-
 public class EmailUnavailableException extends Exception {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private User user;
-	public User getUser() {
-		return user;
+	private String email;
+	public String getUser() {
+		return email;
 	}
-	public void setUser(User user) {
-		this.user = user;
+	public void setUser(String email) {
+		this.email = email;
 	}
-	public EmailUnavailableException(User user) {
-		this.user = user;
+	public EmailUnavailableException(String email) {
+		this.email = email;
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("%s is already used", user.getEmail());
+		return String.format("%s is already used", email);
 	}
 
 }

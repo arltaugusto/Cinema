@@ -1,8 +1,8 @@
-package com.project.Repositories;
+package com.project.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.project.Entities.Booking;
+import com.project.entities.Booking;
 
 public interface BookRepository extends JpaRepository<Booking, Integer>{
 //	List<Book> findByIdUser

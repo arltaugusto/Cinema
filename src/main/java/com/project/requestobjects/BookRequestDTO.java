@@ -1,11 +1,11 @@
-package com.project.requestObjects;
+package com.project.requestobjects;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.project.Entities.PlayPK;
+import com.project.entities.PlayPK;
 
-public class BookRequest {
+public class BookRequestDTO {
 //	private Book book;
 	private String userId;
 	private PlayPK playPk;

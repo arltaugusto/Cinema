@@ -3,14 +3,14 @@ package com.project.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import com.project.Entities.Play;
-import com.project.Entities.PlayPK;
+import com.project.entities.Play;
+import com.project.entities.PlayPK;
 
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class NoTimeAvailableException extends Exception {
 	
 	private static final long serialVersionUID = 1L;
-	private Play play;
+	private final transient Play play;
 
 	public NoTimeAvailableException(Play play) {
 		super();
@@ -21,10 +21,6 @@ public class NoTimeAvailableException extends Exception {
 		return play;
 	}
 
-	public void setPlay(Play play) {
-		this.play = play;
-	}
-	
 	@Override
 	public String toString() {
 		PlayPK playPk = play.getPlayPK();

@@ -1,7 +1,6 @@
-package com.project.Entities;
+package com.project.entities;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.time.LocalDateTime;
 
 import javax.persistence.Column;
@@ -9,6 +8,12 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class PlayPK implements Serializable {
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Column(name = "movie_id")
 	private int movieId;
 	
@@ -69,7 +74,7 @@ public class PlayPK implements Serializable {
 			if (other.startTime != null)
 				return false;
 		} else if (!startTime.equals(other.startTime))
-			return false;
+					return false;
 		return true;
 	}
 }

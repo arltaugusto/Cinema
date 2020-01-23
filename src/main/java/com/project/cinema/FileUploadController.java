@@ -1,4 +1,4 @@
-package com.project.Cinema;
+package com.project.cinema;
 
 public class FileUploadController {
 

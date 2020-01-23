@@ -1,4 +1,4 @@
-package com.project.Entities;
+package com.project.entities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,11 +9,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
+import com.project.requestobjects.UserDTO;
 import com.project.utils.IdGenerator;
 
 
@@ -35,22 +37,46 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	private List<Booking> books = new ArrayList<>();
 	
+	public User() {}
+	
+	public User(String email, String name, Boolean isAdmin, String password) {
+		super();
+		this.email = email;
+		this.name = name;
+		this.isAdmin = isAdmin;
+		this.password = password;
+	}
+	
+	
+	public Boolean getIsAdmin() {
+		return isAdmin;
+	}
+
+	public void setIsAdmin(Boolean isAdmin) {
+		this.isAdmin = isAdmin;
+	}
+
 	public String getEmail() {
 		return email;
 	}
+	
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public void setName(String name) {
 		this.name = name;
 	}
+	
 	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
@@ -58,13 +84,28 @@ public class User {
 	public String getId() {
 		return userId;
 	}
+	
 	public void setId(String userId) {
 		this.userId = userId;
 	}
+	
 	public List<Booking> getBooks() {
 		return books;
 	}
+	
 	public void setBooks(List<Booking> books) {
 		this.books = books;
+	}
+	
+	public void updateData(UserDTO user) {
+		String newEmail = user.getEmail();
+		String newName = user.getName();
+		String newPassword = user.getPassword();
+		if(StringUtils.isNotBlank(newEmail))
+			setEmail(newEmail);
+		if(StringUtils.isNotBlank(newName))
+			setName(newName);
+		if(StringUtils.isNotBlank(newPassword))
+			setPassword(newPassword);
 	}
 }

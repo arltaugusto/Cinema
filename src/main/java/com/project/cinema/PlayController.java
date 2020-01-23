@@ -1,4 +1,4 @@
-package com.project.Cinema;
+package com.project.cinema;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,16 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.Entities.Movie;
-import com.project.Entities.Play;
-import com.project.Entities.PlayPK;
-import com.project.Entities.Sala;
-import com.project.Repositories.BookRepository;
-import com.project.Repositories.MovieRepository;
-import com.project.Repositories.PlayRepository;
-import com.project.Repositories.SalaRepository;
-import com.project.Repositories.UserRepository;
+import com.project.entities.Movie;
+import com.project.entities.Play;
+import com.project.entities.PlayPK;
+import com.project.entities.Sala;
+import com.project.exceptions.InvalidCredentialsException;
 import com.project.exceptions.NoTimeAvailableException;
+import com.project.repositories.BookRepository;
+import com.project.repositories.MovieRepository;
+import com.project.repositories.PlayRepository;
+import com.project.repositories.SalaRepository;
+import com.project.repositories.UserRepository;
 import com.project.utils.BasicEntitySaver;
 
 @RestController
@@ -38,12 +39,17 @@ public class PlayController {
 	@Autowired private PlayRepository playRepository;
 	@Autowired private SalaRepository salaRepository;
 	@Autowired private MovieRepository movieRepository;
-	private static final long minutesBeforeMovie = 15; 
+	private static final long MINUTES_BEFORE_MOVIE = 15; 
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<Play> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException {
-		Movie movie = movieRepository.findById(playPk.getMovieId()).get();
-		Sala sala = salaRepository.findById(playPk.getSalaId()).get();
+	public @ResponseBody ResponseEntity<Play> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException, InvalidCredentialsException {
+		Optional<Movie> optionalMovie = movieRepository.findById(playPk.getMovieId()); 
+		Optional<Sala> optionalSala = salaRepository.findById(playPk.getSalaId());
+		Movie movie =  optionalMovie.isPresent() ? optionalMovie.get() : null;
+		Sala sala = optionalSala.isPresent() ? optionalSala.get() : null;
+		if (movie == null || sala == null ) {
+			throw new InvalidCredentialsException("Bad Request");
+		}
 		LocalDateTime endTime = playPk.getStartTime().plusMinutes(movie.getDuration());
 		Play play = new Play(playPk, endTime, 60, movie, sala);
 		isSalaAvailable(play);
@@ -51,9 +57,9 @@ public class PlayController {
 	}
 	
 	@GetMapping(path="/all", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<List<Play>> getPlays (@RequestBody PlayPK playPk) throws NoTimeAvailableException {
-		return new ResponseEntity<List<Play>>(playRepository.findAll().stream()
-				.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now().plusMinutes(minutesBeforeMovie)))
+	public @ResponseBody ResponseEntity<List<Play>> getPlays (@RequestBody PlayPK playPk) {
+		return new ResponseEntity<>(playRepository.findAll().stream()
+				.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now().plusMinutes(MINUTES_BEFORE_MOVIE)))
 				.collect(Collectors.toList()),
 				HttpStatus.OK);
 	}
@@ -65,9 +71,9 @@ public class PlayController {
 			Play play = playOptional.get();
 			bookRepository.deleteAll(play.getBooks());
 			playRepository.delete(play);
-			return new ResponseEntity<String>("Deleted", HttpStatus.OK);
+			return new ResponseEntity<>("Deleted", HttpStatus.OK);
 		}
-		return new ResponseEntity<String>("Play not Found", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>("Play not Found", HttpStatus.BAD_REQUEST);
 	}
 	
 	private void isSalaAvailable(Play play) throws NoTimeAvailableException {
@@ -77,7 +83,9 @@ public class PlayController {
 		for(Play p : plays) {
 			LocalDateTime currentStartTime = p.getPlayPK().getStartTime();
 			LocalDateTime currentEndTime = p.getEndTime();
-			if (!((newStartTime.compareTo(currentStartTime) < 0 && newEndTime.compareTo(currentStartTime) < 0) || (newStartTime.compareTo(currentEndTime) > 0 && newEndTime.compareTo(currentEndTime) > 0) && p.getPlayPK().getSalaId() == play.getPlayPK().getSalaId())) {
+			if (!((newStartTime.compareTo(currentStartTime) < 0 && newEndTime.compareTo(currentStartTime) < 0) ||
+					(newStartTime.compareTo(currentEndTime) > 0 && newEndTime.compareTo(currentEndTime) > 0)
+					&& p.getPlayPK().getSalaId() == play.getPlayPK().getSalaId())) {
 				throw new NoTimeAvailableException(play);
 			}
 		}

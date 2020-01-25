@@ -20,7 +20,7 @@ import com.project.exceptions.EmailUnavailableException;
 import com.project.exceptions.InvalidCredentialsException;
 import com.project.repositories.UserRepository;
 import com.project.requestobjects.UserDTO;
-import com.project.utils.BasicEntitySaver;
+import com.project.utils.BasicEntityUtils;
 
 
 @Controller
@@ -29,7 +29,6 @@ import com.project.utils.BasicEntitySaver;
 public class UserController {
 	@Autowired 
 	private UserRepository userRepository;
-	
 	private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid Username or password";
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
@@ -37,7 +36,7 @@ public class UserController {
 		String email = user.getEmail();
 		User us = new User(email, user.getName(), false, user.getPassword());
 		checkEmailStatus(email);
-		return BasicEntitySaver.save(us, userRepository);
+		return BasicEntityUtils.save(us, userRepository);
 	}
 	
 	private void checkEmailStatus(String email) throws EmailUnavailableException {
@@ -56,7 +55,7 @@ public class UserController {
 		if(us.isPresent()) {
 			User userDb = us.get();
 			userDb.updateData(user);
-			return BasicEntitySaver.save(userDb, userRepository);
+			return BasicEntityUtils.save(userDb, userRepository);
 		}
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}

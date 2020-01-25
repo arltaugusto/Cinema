@@ -27,7 +27,7 @@ import com.project.repositories.MovieRepository;
 import com.project.repositories.PlayRepository;
 import com.project.repositories.SalaRepository;
 import com.project.repositories.UserRepository;
-import com.project.utils.BasicEntitySaver;
+import com.project.utils.BasicEntityUtils;
 
 @RestController
 @CrossOrigin
@@ -53,7 +53,7 @@ public class PlayController {
 		LocalDateTime endTime = playPk.getStartTime().plusMinutes(movie.getDuration());
 		Play play = new Play(playPk, endTime, 60, movie, sala);
 		isSalaAvailable(play);
-		return BasicEntitySaver.save(play, playRepository);
+		return BasicEntityUtils.save(play, playRepository);
 	}
 	
 	@GetMapping(path="/all", consumes = "application/json", produces = "application/json")

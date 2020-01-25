@@ -3,6 +3,8 @@ package com.project.requestobjects;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.project.entities.Play;
 
 public class MovieDTO {

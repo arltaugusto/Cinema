@@ -2,8 +2,6 @@ package com.project.utils;
 
 import java.io.IOException;
 
-import org.codehaus.jackson.JsonParseException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.HttpStatus;
@@ -16,7 +14,7 @@ public interface BasicEntityUtils {
 		return new ResponseEntity<>(entity, HttpStatus.OK);
 	}
 
-	public static <T> T convertToEntity(Class<T> object, String jsonString) throws IOException {
+	public static <T> T convertToEntityFromString(Class<T> object, String jsonString) throws IOException {
 		ObjectMapper objectMapper = new ObjectMapper();
 		return objectMapper.readValue(jsonString, object);
 	}

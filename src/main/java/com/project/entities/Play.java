@@ -31,13 +31,13 @@ public class Play {
 	@MapsId("playId")
 	@ManyToOne
 	@JoinColumn(name = "sala_id")
-	private Sala sala;
+	private Room sala;
 
 	@OneToMany(mappedBy = "play")
 	private List<Booking> books = new ArrayList<>();
 	public Play() {}
 	
-	public Play(PlayPK playPK, LocalDateTime endTime, int availableSeats, Movie movie, Sala sala) {
+	public Play(PlayPK playPK, LocalDateTime endTime, int availableSeats, Movie movie, Room sala) {
 		super();
 		this.playPK = playPK;
 		this.endTime = endTime;
@@ -78,11 +78,11 @@ public class Play {
 		this.movie = movie;
 	}
 
-	public Sala getSala() {
+	public Room getSala() {
 		return sala;
 	}
 
-	public void setSala(Sala sala) {
+	public void setSala(Room sala) {
 		this.sala = sala;
 	}
 

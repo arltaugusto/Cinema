@@ -13,7 +13,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "salas")
-public class Sala {
+public class Room {
 	
 	@Id
 	@GeneratedValue

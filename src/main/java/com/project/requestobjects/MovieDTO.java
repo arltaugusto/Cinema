@@ -13,15 +13,17 @@ public class MovieDTO {
 	
 	private String name;
 	private long duration;
+	private String synopsis;
 	
 	private List<Play> plays = new ArrayList<>();
 	
-	public MovieDTO() {};
+	public MovieDTO() {}
 
-	public MovieDTO(int id, String name, long duration) {
+	public MovieDTO(int id, String name, long duration, String synopsis) {
 		this.id = id;
 		this.name = name;
 		this.duration = duration;
+		this.synopsis = synopsis;
 	}
 
 	public int getId() {
@@ -36,6 +38,14 @@ public class MovieDTO {
 		this.plays = plays;
 	}
 	
+	public String getSynopsis() {
+		return synopsis;
+	}
+
+	public void setSynopsis(String synopsis) {
+		this.synopsis = synopsis;
+	}
+
 	public String getName() {
 		return name;
 	}

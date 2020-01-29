@@ -6,7 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.project.entities.User;
 import com.project.exceptions.EmailUnavailableException;
@@ -22,9 +22,8 @@ import com.project.repositories.UserRepository;
 import com.project.requestobjects.UserDTO;
 import com.project.utils.BasicEntityUtils;
 
-
-@Controller
 @CrossOrigin
+@RestController
 @RequestMapping(path="/user") 
 public class UserController {
 	@Autowired 
@@ -59,7 +58,7 @@ public class UserController {
 		}
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
-
+	
 	@PostMapping(path="/login", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<User> login (@RequestBody UserDTO user) throws InvalidCredentialsException {
 		Optional<User> u = userRepository.findByEmailInAndPasswordIn(user.getEmail(), user.getPassword());

@@ -22,6 +22,8 @@ public class Movie {
 	private String name;
 	private long duration;
 	private String imagePath;
+	private String synopsis;
+	
 	
 	@OneToMany(mappedBy = "movie")
 	@JsonIgnore
@@ -29,14 +31,23 @@ public class Movie {
 	
 	public Movie() {}
 
-	public Movie(String name, long duration, String imagePath) {
+	public Movie(String name, long duration, String imagePath, String synopsis) {
 		this.name = name;
 		this.duration = duration;
 		this.imagePath = imagePath;
+		this.synopsis = synopsis;
 	}
 
 	public String getImagePath() {
 		return imagePath;
+	}
+
+	public String getSynopsis() {
+		return synopsis;
+	}
+
+	public void setSynopsis(String synopsis) {
+		this.synopsis = synopsis;
 	}
 
 	public void setImagePath(String imagePath) {

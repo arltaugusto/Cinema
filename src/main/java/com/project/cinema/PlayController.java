@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.entities.Movie;
 import com.project.entities.Play;
 import com.project.entities.PlayPK;
-import com.project.entities.Sala;
+import com.project.entities.Room;
 import com.project.exceptions.InvalidCredentialsException;
 import com.project.exceptions.NoTimeAvailableException;
 import com.project.repositories.BookRepository;
@@ -44,9 +44,9 @@ public class PlayController {
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<Play> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException, InvalidCredentialsException {
 		Optional<Movie> optionalMovie = movieRepository.findById(playPk.getMovieId()); 
-		Optional<Sala> optionalSala = salaRepository.findById(playPk.getSalaId());
+		Optional<Room> optionalSala = salaRepository.findById(playPk.getSalaId());
 		Movie movie =  optionalMovie.isPresent() ? optionalMovie.get() : null;
-		Sala sala = optionalSala.isPresent() ? optionalSala.get() : null;
+		Room sala = optionalSala.isPresent() ? optionalSala.get() : null;
 		if (movie == null || sala == null ) {
 			throw new InvalidCredentialsException("Bad Request");
 		}

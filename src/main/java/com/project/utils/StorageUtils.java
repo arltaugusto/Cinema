@@ -14,4 +14,8 @@ public interface StorageUtils {
 		Path path = Paths.get(pathStr);
 		Files.write(path, bytes);
 	}
+	
+	public static void deleteImage(Path path) throws IOException {
+		Files.delete(path);
+	}
 }

@@ -20,9 +20,9 @@ public class Seat {
 	private SeatPK seatPk;
 	
 	@JsonIgnore
-	@MapsId("salaId")
+	@MapsId("roomId")
 	@ManyToOne
-	private Room sala;
+	private Room room;
 	 
 	@ManyToMany
 	@JsonIgnore
@@ -37,12 +37,12 @@ public class Seat {
 		this.seatPk = seatPk;
 	}
 
-	public Room getSala() {
-		return sala;
+	public Room getRoom() {
+		return room;
 	}
 
-	public void setSala(Room sala) {
-		this.sala = sala;
+	public void setRoom(Room room) {
+		this.room = room;
 	}
 
 	public List<Booking> getBooks() {

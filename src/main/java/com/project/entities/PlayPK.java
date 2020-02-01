@@ -17,8 +17,8 @@ public class PlayPK implements Serializable {
 	@Column(name = "movie_id")
 	private int movieId;
 	
-	@Column(name = "sala_id")
-	private int salaId;
+	@Column(name = "room_id")
+	private int roomId;
 	
 	@Column(name = "startTime")
 	private LocalDateTime startTime;
@@ -31,12 +31,12 @@ public class PlayPK implements Serializable {
 		this.movieId = movieId;
 	}
 
-	public int getSalaId() {
-		return salaId;
+	public int getRoomId() {
+		return roomId;
 	}
 
-	public void setSalaId(int salaId) {
-		this.salaId = salaId;
+	public void setRoomId(int roomId) {
+		this.roomId = roomId;
 	}
 
 	public LocalDateTime getStartTime() {
@@ -52,7 +52,7 @@ public class PlayPK implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + movieId;
-		result = prime * result + salaId;
+		result = prime * result + roomId;
 		result = prime * result + ((startTime == null) ? 0 : startTime.hashCode());
 		return result;
 	}
@@ -68,7 +68,7 @@ public class PlayPK implements Serializable {
 		PlayPK other = (PlayPK) obj;
 		if (movieId != other.movieId)
 			return false;
-		if (salaId != other.salaId)
+		if (roomId != other.roomId)
 			return false;
 		if (startTime == null) {
 			if (other.startTime != null)

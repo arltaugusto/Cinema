@@ -6,21 +6,21 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class SeatPK implements Serializable{
-	private int salaId;
+	private int roomId;
 	private int seatId;
 	
 	public SeatPK() {}
-	public SeatPK(int salaId, int seatId) {
+	public SeatPK(int roomId, int seatId) {
 		super();
-		this.salaId = salaId;
+		this.roomId = roomId;
 		this.seatId = seatId;
 	}
-	public int getSalaId() {
-		return salaId;
+	public int getRoomId() {
+		return roomId;
 	}
 
-	public void setSalaId(int salaId) {
-		this.salaId = salaId;
+	public void setRoomId(int roomId) {
+		this.roomId = roomId;
 	}
 	public int getSeatId() {
 		return seatId;
@@ -33,7 +33,7 @@ public class SeatPK implements Serializable{
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + salaId;
+		result = prime * result + roomId;
 		result = prime * result + seatId;
 		return result;
 	}
@@ -47,7 +47,7 @@ public class SeatPK implements Serializable{
 		if (getClass() != obj.getClass())
 			return false;
 		SeatPK other = (SeatPK) obj;
-		if (salaId != other.salaId)
+		if (roomId != other.roomId)
 			return false;
 		if (seatId != other.seatId)
 			return false;

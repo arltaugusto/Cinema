@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.project.entities.Movie;
 import com.project.entities.Play;
+import com.project.entities.User;
 import com.project.repositories.BookRepository;
 import com.project.repositories.MovieRepository;
 import com.project.repositories.PlayRepository;
@@ -49,7 +51,8 @@ public class MovieController {
 	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile")@Valid @NotNull @NotBlank MultipartFile imageFile) throws IOException {
 		MovieDTO movie = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
 		String path = environment.getProperty("images.directory") + imageFile.getOriginalFilename();
-		StorageUtils.saveImage(imageFile, path);
+		if(!imageFile.isEmpty())
+			StorageUtils.saveImage(imageFile, path);
 		return BasicEntityUtils.save(new Movie(movie.getName(), movie.getDuration(), path, movie.getSynopsis()), movieRepository);
 	}
 	
@@ -74,5 +77,10 @@ public class MovieController {
 			return new ResponseEntity<>("Deleted", HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Movie not Found", HttpStatus.BAD_REQUEST);
+	}
+	
+	@GetMapping(path="/all")
+	public @ResponseBody Iterable<Movie> getAllUsers() {
+		return movieRepository.findAll();
 	}
 }

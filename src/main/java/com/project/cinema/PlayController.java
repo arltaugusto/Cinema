@@ -44,9 +44,9 @@ public class PlayController {
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<Play> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException, InvalidCredentialsException {
 		Optional<Movie> optionalMovie = movieRepository.findById(playPk.getMovieId()); 
-		Optional<Room> optionalSala = salaRepository.findById(playPk.getSalaId());
+		Optional<Room> optionalRoom = salaRepository.findById(playPk.getRoomId());
 		Movie movie =  optionalMovie.isPresent() ? optionalMovie.get() : null;
-		Room sala = optionalSala.isPresent() ? optionalSala.get() : null;
+		Room sala = optionalRoom.isPresent() ? optionalRoom.get() : null;
 		if (movie == null || sala == null ) {
 			throw new InvalidCredentialsException("Bad Request");
 		}
@@ -85,7 +85,7 @@ public class PlayController {
 			LocalDateTime currentEndTime = p.getEndTime();
 			if (!((newStartTime.compareTo(currentStartTime) < 0 && newEndTime.compareTo(currentStartTime) < 0) ||
 					(newStartTime.compareTo(currentEndTime) > 0 && newEndTime.compareTo(currentEndTime) > 0)
-					&& p.getPlayPK().getSalaId() == play.getPlayPK().getSalaId())) {
+					&& p.getPlayPK().getRoomId() == play.getPlayPK().getRoomId())) {
 				throw new NoTimeAvailableException(play);
 			}
 		}

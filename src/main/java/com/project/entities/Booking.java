@@ -29,11 +29,10 @@ public class Booking {
 	@JsonIgnore
 	private User user;
 	
-	@JsonIgnore
 	@ManyToOne
 	@JoinColumns({
 			@JoinColumn(name="movie_id", referencedColumnName = "movie_id"),
-			@JoinColumn(name="sala_id", referencedColumnName = "sala_id"),
+			@JoinColumn(name="room_id", referencedColumnName = "room_id"),
 			@JoinColumn(name="startTime", referencedColumnName = "startTime")
 	})
 	private Play play;

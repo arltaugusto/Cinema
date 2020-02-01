@@ -20,11 +20,11 @@ public class Room {
 	private int id;
 	
 	@JsonIgnore
-	@OneToMany(mappedBy = "sala")
+	@OneToMany(mappedBy = "room")
 	private List<Play> plays = new ArrayList<>();
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "sala")
+	@OneToMany(mappedBy = "room")
 	private List<Seat> seats = new ArrayList<>();
 
 	public List<Play> getPlays() {

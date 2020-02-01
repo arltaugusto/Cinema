@@ -45,7 +45,7 @@ public class BookController {
 	public @ResponseBody ResponseEntity<Booking> addNewBook (@RequestBody BookRequestDTO bookRequest) throws SeatAlreadyBookedException, NoSeatBookedException {
 		Play play = playRepository.findById(bookRequest.getPlayPk()).get();
 		User user = userRepository.findById(bookRequest.getUserId()).get();
-		int sala = bookRequest.getPlayPk().getSalaId();
+		int sala = bookRequest.getPlayPk().getRoomId();
 		List<Seat> seats = bookRequest.getSeats().stream()
 			.map(num -> new SeatPK(sala, num))
 			.map(seatRepository::findById)

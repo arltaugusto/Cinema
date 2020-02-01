@@ -2,7 +2,6 @@ package com.project.entities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.EmbeddedId;
@@ -12,6 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "plays")
@@ -30,20 +31,20 @@ public class Play {
 	
 	@MapsId("playId")
 	@ManyToOne
-	@JoinColumn(name = "sala_id")
-	private Room sala;
+	@JoinColumn(name = "room_id")
+	private Room room;
 
 	@OneToMany(mappedBy = "play")
+	@JsonIgnore
 	private List<Booking> books = new ArrayList<>();
 	public Play() {}
 	
-	public Play(PlayPK playPK, LocalDateTime endTime, int availableSeats, Movie movie, Room sala) {
-		super();
+	public Play(PlayPK playPK, LocalDateTime endTime, int availableSeats, Movie movie, Room room) {
 		this.playPK = playPK;
 		this.endTime = endTime;
 		this.availableSeats = availableSeats;
 		this.movie = movie;
-		this.sala = sala;
+		this.room = room;
 	}
 
 	public LocalDateTime getEndTime() {
@@ -78,12 +79,12 @@ public class Play {
 		this.movie = movie;
 	}
 
-	public Room getSala() {
-		return sala;
+	public Room getRoom() {
+		return room;
 	}
 
-	public void setSala(Room sala) {
-		this.sala = sala;
+	public void setRoom(Room room) {
+		this.room = room;
 	}
 
 	public List<Booking> getBooks() {

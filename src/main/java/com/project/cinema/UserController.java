@@ -1,6 +1,8 @@
 package com.project.cinema;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,17 +65,23 @@ public class UserController {
 	@PostMapping(path="/login", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<User> login (@RequestBody UserDTO user) throws InvalidCredentialsException {
 		Optional<User> u = userRepository.findByEmailInAndPasswordIn(user.getEmail(), user.getPassword());
-		User us;
-		try {
-			us = u.get();
-		} catch (Exception e) {
-			throw new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE);
+		if(u.isPresent()) {
+			User us = u.get();
+			us.setBooks(us.getBooks().stream()
+				.filter(book -> book.getPlay().getPlayPK().getStartTime().compareTo(LocalDateTime.now()) > 0)
+				.collect(Collectors.toList()));
+			return new ResponseEntity<>(us, HttpStatus.OK);
 		}
-		return new ResponseEntity<>(us, HttpStatus.OK);
+		throw new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE);
 	}
 	
 	@GetMapping(path="/all")
 	public @ResponseBody Iterable<User> getAllUsers() {
 		return userRepository.findAll();
+	}
+	
+	@GetMapping(path="/{id}")
+	public @ResponseBody User getUserData(@PathVariable("id") String id) {
+		return userRepository.findById(id).get();
 	}
 }

@@ -24,6 +24,6 @@ public class NoTimeAvailableException extends Exception {
 	@Override
 	public String toString() {
 		PlayPK playPk = play.getPlayPK();
-		return String.format("Not Available time for %s at %s in %s room", play.getMovie().getName(), playPk.getStartTime().toString(), playPk.getSalaId());
+		return String.format("Not Available time for %s at %s in %s room", play.getMovie().getName(), playPk.getStartTime().toString(), playPk.getRoomId());
 	}
 }

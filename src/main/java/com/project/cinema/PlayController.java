@@ -58,8 +58,8 @@ public class PlayController {
 		return BasicEntityUtils.save(play, playRepository);
 	}
 	
-	@GetMapping(path="/all", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<List<Play>> getPlays (@RequestBody PlayPK playPk) {
+	@GetMapping(path="/all", produces = "application/json")
+	public @ResponseBody ResponseEntity<List<Play>> getPlays () {
 		return new ResponseEntity<>(playRepository.findAll().stream()
 				.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now().plusMinutes(MINUTES_BEFORE_MOVIE)))
 				.collect(Collectors.toList()),
@@ -93,7 +93,7 @@ public class PlayController {
 		}
 	}
 
-	@PostMapping
+	@PostMapping(path = "/getPlay")
 	public @ResponseBody ResponseEntity<Play> getPlay(PlayPK id) {
 		return new ResponseEntity<>(playRepository.findById(id).get(), HttpStatus.OK);
 	}

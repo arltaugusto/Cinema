@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -82,5 +83,10 @@ public class MovieController {
 	@GetMapping(path="/all")
 	public @ResponseBody Iterable<Movie> getAllUsers() {
 		return movieRepository.findAll();
+	}
+	
+	@GetMapping(path="/{id}")
+	public @ResponseBody List<Play> getMoviePlays(@PathVariable("id") int id) {
+		return movieRepository.findById(id).get().getPlays();
 	}
 }

@@ -35,7 +35,6 @@ public class Play {
 	private Room room;
 
 	@OneToMany(mappedBy = "play")
-	@JsonIgnore
 	private List<Booking> books = new ArrayList<>();
 	public Play() {}
 	

@@ -35,6 +35,7 @@ public class Booking {
 			@JoinColumn(name="room_id", referencedColumnName = "room_id"),
 			@JoinColumn(name="startTime", referencedColumnName = "startTime")
 	})
+	@JsonIgnore
 	private Play play;
 	
 	@ManyToMany

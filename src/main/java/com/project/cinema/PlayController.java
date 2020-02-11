@@ -94,7 +94,7 @@ public class PlayController {
 	}
 
 	@PostMapping(path = "/getPlay")
-	public @ResponseBody ResponseEntity<Play> getPlay(PlayPK id) {
+	public @ResponseBody ResponseEntity<Play> getPlay(@RequestBody PlayPK id) {
 		return new ResponseEntity<>(playRepository.findById(id).get(), HttpStatus.OK);
 	}
 }

@@ -28,6 +28,12 @@ public class Seat {
 	@JsonIgnore
 	private List<Booking> books = new ArrayList<>();
 	 
+	public Seat() {}
+	
+	public Seat(SeatPK seatPk, Room room) {
+		this.seatPk = seatPk;
+		this.room = room;
+	}
 
 	public SeatPK getSeatPk() {
 		return seatPk;
@@ -52,5 +58,5 @@ public class Seat {
 	public void setBooks(List<Booking> books) {
 		this.books = books;
 	}
-
+	
 }

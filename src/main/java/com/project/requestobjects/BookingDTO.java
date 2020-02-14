@@ -19,25 +19,24 @@ public class BookingDTO {
 	
 	private Play play;
 	
-	@ManyToMany
-	private List<Seat> seats = new ArrayList<>();
+//	private List<Seat> seats = new ArrayList<>();
 	
 	public BookingDTO() {}
 	
 	public BookingDTO(User user, Play play, List<Seat> seats) {
 		this.user = user;
 		this.play = play;
-		this.seats = seats;
+//		this.seats = seats;
 		this.bookDate = LocalDateTime.now();
 	}
 	
-	public List<Seat> getSeats() {
-		return seats;
-	}
-
-	public void setSeats(List<Seat> seats) {
-		this.seats = seats;
-	}
+//	public List<Seat> getSeats() {
+//		return seats;
+//	}
+//
+//	public void setSeats(List<Seat> seats) {
+//		this.seats = seats;
+//	}
 
 	public Play getPlay() {
 		return play;

@@ -9,14 +9,14 @@ public class BookRequestDTO {
 //	private Book book;
 	private String userId;
 	private PlayPK playPk;
-	private List<Integer> seats = new ArrayList<>();
+//	private List<Integer> seats = new ArrayList<>();
 	
-	public List<Integer> getSeats() {
-		return seats;
-	}
-	public void setSeats(List<Integer> seats) {
-		this.seats = seats;
-	}
+//	public List<Integer> getSeats() {
+//		return seats;
+//	}
+//	public void setSeats(List<Integer> seats) {
+//		this.seats = seats;
+//	}
 	public PlayPK getPlayPk() {
 		return playPk;
 	}

@@ -14,10 +14,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.utils.SeatManager;
 
 @Entity
 @Table(name = "bookings")
-public class Booking {
+public class Booking implements SeatManager {
 	
 	@Id
 	@GeneratedValue

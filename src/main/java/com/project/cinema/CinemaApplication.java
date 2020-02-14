@@ -1,6 +1,8 @@
 package com.project.cinema;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
@@ -10,6 +12,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @ComponentScan({"com.project.cinema","com.project.requestobjects","com.project.exceptions", "com.project.utils"})
 @EntityScan("com.project.entities")
 @EnableJpaRepositories("com.project.repositories")
+@EnableScheduling
 public class CinemaApplication {
 
 	public static void main(String[] args) {

@@ -58,5 +58,22 @@ public class Seat {
 	public void setBooks(List<Booking> books) {
 		this.books = books;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Seat other = (Seat) obj;
+		if (seatPk == null) {
+			if (other.seatPk != null)
+				return false;
+		} else if (!seatPk.equals(other.seatPk))
+			return false;
+		return true;
+	}
 	
 }

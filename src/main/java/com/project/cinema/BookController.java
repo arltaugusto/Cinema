@@ -1,11 +1,10 @@
 package com.project.cinema;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -13,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,21 +24,23 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.entities.Booking;
 import com.project.entities.Play;
 import com.project.entities.PlayPK;
-import com.project.entities.Room;
 import com.project.entities.Seat;
 import com.project.entities.SeatPK;
 import com.project.entities.User;
-import com.project.exceptions.InvalidCredentialsException;
+import com.project.exceptions.EntityNotFoundException;
 import com.project.exceptions.SeatAlreadyBookedException;
+import com.project.exceptions.SessionTimeOutException;
 import com.project.repositories.BookRepository;
 import com.project.repositories.PlayRepository;
 import com.project.repositories.SalaRepository;
 import com.project.repositories.SeatRepository;
+import com.project.repositories.TemporalBookingsRepository;
 import com.project.repositories.UserRepository;
 import com.project.requestobjects.BookRequestDTO;
 import com.project.requestobjects.BookingDTO;
 import com.project.requestobjects.SeatRequest;
-import com.project.requestobjects.TemporalSeat;
+import com.project.requestobjects.TemporalSeats;
+import com.project.utils.BasicEntityUtils;
 import com.project.utils.SeatManager;
 
 @RestController
@@ -54,79 +54,62 @@ public class BookController {
 	@Autowired private PlayRepository playRepository;
 	@Autowired private SeatRepository seatRepository;
 	@Autowired private SalaRepository roomRepository;
+	@Autowired private TemporalBookingsRepository temporalBookingsRepository;
 
-	
-	public static Map<String, TemporalSeat> temporaryBookedSeats = new HashMap<>();
-	
-	//FIXME create  a new exception
 	@PostMapping(path = "/bookTemporalSeat")
-	public @ResponseBody ResponseEntity<String> bookTemporalSeat(@RequestBody SeatRequest seatRequest) throws SeatAlreadyBookedException, InvalidCredentialsException {
+	public @ResponseBody ResponseEntity<String> bookTemporalSeat(@RequestBody SeatRequest seatRequest) throws SeatAlreadyBookedException, EntityNotFoundException, SessionTimeOutException {
 		String userId = seatRequest.getUserId();
 		SeatPK seatPk = new SeatPK(seatRequest.getRoomId(), seatRequest.getSeatId());
-		Optional<Room> roomOp = roomRepository.findById(seatRequest.getRoomId());
-		Optional<Seat> seatOp = seatRepository.findById(seatPk);
-		if(!roomOp.isPresent() || !seatOp.isPresent()) {
-			throw new InvalidCredentialsException("bad room");
-		}
-		Seat seat = seatOp.get();
+		Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
 		checkSeatAvailability(seat, seatRequest.getPlayPk());
-		if (temporaryBookedSeats.containsKey(userId)) {
-			TemporalSeat temporalSeat = temporaryBookedSeats.get(userId);
+		if (temporalBookingsRepository.getTemporalSeatsList().containsKey(userId)) {
+			TemporalSeats temporalSeat = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
 			if(!temporalSeat.isOpen()) {
-				temporaryBookedSeats.remove(userId);
-				//TODO throw exception
+				temporalBookingsRepository.remove(userId);
+				throw new SessionTimeOutException("Booking session expired");
 			}
 			temporalSeat.addSeat(seat);
+			temporalBookingsRepository.addSeat(userId, temporalSeat);
 		} else {
-			temporaryBookedSeats.put(userId, new TemporalSeat(Arrays.asList(seat), userId, seatRequest.getPlayPk(), LocalDateTime.now()));
+			List<Seat> userSeatList = new ArrayList<>();
+			userSeatList.add(seat);
+			temporalBookingsRepository.put(userId, new TemporalSeats(userSeatList, userId, seatRequest.getPlayPk(), LocalDateTime.now()));
 		}
 		return new ResponseEntity<>("Succed", HttpStatus.OK);
 	}
 	
-	//FIXME create  a new exception
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<Booking> addNewBook (@RequestBody BookRequestDTO bookRequest) throws InvalidCredentialsException {
+	public @ResponseBody ResponseEntity<Booking> addNewBook (@RequestBody BookRequestDTO bookRequest) throws EntityNotFoundException {
 		String userId = bookRequest.getUserId();
-		Optional<User> userOp = userRepository.findById(userId);
-		Optional<Play> playOp = playRepository.findById(bookRequest.getPlayPk());
-		if (!playOp.isPresent() || !userOp.isPresent())
-			throw new InvalidCredentialsException("bad request");
-		Play play = playOp.get();
-		List<Seat> seats = temporaryBookedSeats.get(userId).getSeats();
-		Booking booking = new Booking(userOp.get(), play, seats);
+		User user = BasicEntityUtils.entityFinder(userRepository.findById(userId));
+		Play play = BasicEntityUtils.entityFinder(playRepository.findById(bookRequest.getPlayPk()));
+		List<Seat> seats = temporalBookingsRepository.getTemporalSeatsByUserId(userId).getSeats();
+		Booking booking = new Booking(user, play, seats);
 		play.setAvailableSeats(play.getAvailableSeats() - seats.size());
-		temporaryBookedSeats.remove(userId);
+		temporalBookingsRepository.remove(userId);
 		bookRepository.save(booking);
+		playRepository.save(play);
 		return new ResponseEntity<>(booking, HttpStatus.OK);
 	}
 	
 	@GetMapping(path="/{id}")
-	public @ResponseBody ResponseEntity<Iterable<Booking>> getUserBooks(@PathVariable("id") String id) {
-		return new ResponseEntity<>(userRepository.findById(id).get().getBooks(), HttpStatus.OK);
+	public @ResponseBody ResponseEntity<Iterable<Booking>> getUserBooks(@PathVariable("id") String id) throws EntityNotFoundException {
+		return new ResponseEntity<>(BasicEntityUtils.entityFinder(userRepository.findById(id)).getBooks(), HttpStatus.OK);
 	}
 	
 	@PostMapping(path = "/delete")
-	public @ResponseBody ResponseEntity<String> deleteBooking(@RequestBody BookingDTO book) {
-		Optional<Booking> bookingOptional = bookRepository.findById(book.getBookId());
-		if(bookingOptional.isPresent()) {
-			Booking booking = bookingOptional.get();
+	public @ResponseBody ResponseEntity<String> deleteBooking(@RequestBody BookingDTO book) throws EntityNotFoundException {
+			Booking booking = BasicEntityUtils.entityFinder(bookRepository.findById(book.getBookId()));
 			Play play = booking.getPlay();
 			play.setAvailableSeats(play.getAvailableSeats() + booking.getSeats().size());
 			playRepository.save(play);
 			bookRepository.delete(booking);
 			return new ResponseEntity<>("Deleted", HttpStatus.OK);
-		}
-		return new ResponseEntity<>("No booking found", HttpStatus.BAD_REQUEST);
 	}
 
-	//FIXME create  a new exception
-	private void checkSeatAvailability(Seat seat, PlayPK playPk) throws SeatAlreadyBookedException, InvalidCredentialsException {
-		Optional<Play> playOp = playRepository.findById(playPk);
-		if (!playOp.isPresent()) {
-			throw new InvalidCredentialsException("asdasd");
-		}
-		Play play= playOp.get();
-		List<TemporalSeat> temporalBookings = temporaryBookedSeats.entrySet().stream()
+	private void checkSeatAvailability(Seat seat, PlayPK playPk) throws SeatAlreadyBookedException, EntityNotFoundException {
+		Play play= BasicEntityUtils.entityFinder(playRepository.findById(playPk));
+		List<TemporalSeats> temporalBookings = temporalBookingsRepository.getTemporalSeatsList().entrySet().stream()
 			.filter(map -> map.getValue().getPlayPk().equals(playPk))
 			.map(Map.Entry::getValue)
 			.collect(Collectors.toList());
@@ -136,10 +119,8 @@ public class BookController {
 	
 	private <T extends SeatManager> void check(List<T> list, Seat seat) throws SeatAlreadyBookedException {
 		for (T book : list) {
-			List<SeatPK> seatsAlreadyBooked = book.getSeats().stream()
-					.map(Seat::getSeatPk)
-					.collect(Collectors.toList());
-			if(seatsAlreadyBooked.contains(seat.getSeatPk())) {
+			List<Seat> seatsAlreadyBooked = book.getSeats();
+			if(seatsAlreadyBooked.contains(seat)) {
 				throw new SeatAlreadyBookedException(Arrays.asList(seat));
 			}
 		}

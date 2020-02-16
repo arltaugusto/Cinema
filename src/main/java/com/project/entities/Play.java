@@ -24,12 +24,12 @@ public class Play {
 	private LocalDateTime endTime;
 	private int availableSeats;
 	
-	@MapsId("MovieId")
+	@MapsId("movieId")
 	@ManyToOne
 	@JoinColumn(name = "movie_id")
 	private Movie movie;
 	
-	@MapsId("playId")
+	@MapsId("roomId")
 	@ManyToOne
 	@JoinColumn(name = "room_id")
 	private Room room;

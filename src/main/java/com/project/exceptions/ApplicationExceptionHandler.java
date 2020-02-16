@@ -23,6 +23,11 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 	}
 	
 	@ExceptionHandler
+	public ResponseEntity<ApplicationErrors> handleSessionTimeOutException(SessionTimeOutException ex, WebRequest webRequest) {
+		return clientException(ex, webRequest, "401", HttpStatus.UNAUTHORIZED);
+	}
+	
+	@ExceptionHandler
 	public ResponseEntity<ApplicationErrors> handleNoTimeAvailableException(NoTimeAvailableException ex, WebRequest webRequest) {
 		return clientException(ex, webRequest, "400", HttpStatus.BAD_REQUEST);
 	}
@@ -37,9 +42,14 @@ public class ApplicationExceptionHandler extends ResponseEntityExceptionHandler 
 		return clientException(ex, webRequest, "400", HttpStatus.BAD_REQUEST);
 	}
 	
+	@ExceptionHandler
+	public ResponseEntity<ApplicationErrors> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest webRequest) {
+		return clientException(ex, webRequest, "400", HttpStatus.BAD_REQUEST);
+	}
+	
 	private ResponseEntity<ApplicationErrors> clientException(Exception ex, WebRequest webRequest, String code, HttpStatus httpStatus) {
 		ApplicationErrors errors = new ApplicationErrors(ex.toString(), code);
 		errors.setDate(LocalDateTime.now());
-		return new ResponseEntity<ApplicationErrors>(errors, httpStatus);
+		return new ResponseEntity<>(errors, httpStatus);
 	}
 }

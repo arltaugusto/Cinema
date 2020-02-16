@@ -17,7 +17,7 @@ public class Movie {
 	
 	@Id
 	@GeneratedValue
-	private int id;
+	private int movieId;
 	
 	private String name;
 	private long duration;
@@ -54,8 +54,8 @@ public class Movie {
 		this.imagePath = imagePath;
 	}
 
-	public int getid() {
-		return id;
+	public int getMovieId() {
+		return movieId;
 	}
 
 	public List<Play> getPlays() {
@@ -74,8 +74,8 @@ public class Movie {
 		this.name = name;
 	}
 
-	public void setid(int id) {
-		this.id = id;
+	public void setMovieId(int id) {
+		this.movieId = id;
 	}
 
 	public long getDuration() {

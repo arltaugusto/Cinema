@@ -1,7 +1,10 @@
 package com.project.cinema;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -10,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,13 +24,17 @@ import com.project.entities.Movie;
 import com.project.entities.Play;
 import com.project.entities.PlayPK;
 import com.project.entities.Room;
+import com.project.entities.Seat;
+import com.project.exceptions.EntityNotFoundException;
 import com.project.exceptions.InvalidCredentialsException;
 import com.project.exceptions.NoTimeAvailableException;
 import com.project.repositories.BookRepository;
 import com.project.repositories.MovieRepository;
 import com.project.repositories.PlayRepository;
 import com.project.repositories.SalaRepository;
+import com.project.repositories.TemporalBookingsRepository;
 import com.project.repositories.UserRepository;
+import com.project.requestobjects.TemporalSeats;
 import com.project.utils.BasicEntityUtils;
 
 @RestController
@@ -41,6 +47,7 @@ public class PlayController {
 	@Autowired private PlayRepository playRepository;
 	@Autowired private SalaRepository salaRepository;
 	@Autowired private MovieRepository movieRepository;
+	private TemporalBookingsRepository temporalBookingsRepository;
 	private static final long MINUTES_BEFORE_MOVIE = 15; 
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
@@ -94,7 +101,26 @@ public class PlayController {
 	}
 
 	@PostMapping(path = "/getPlay")
-	public @ResponseBody ResponseEntity<Play> getPlay(@RequestBody PlayPK id) {
-		return new ResponseEntity<>(playRepository.findById(id).get(), HttpStatus.OK);
+	public @ResponseBody ResponseEntity<Play> getPlay(@RequestBody PlayPK id) throws EntityNotFoundException {
+		return new ResponseEntity<>(BasicEntityUtils.entityFinder(playRepository.findById(id)), HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "/getPlayBookedSeats")
+	public @ResponseBody List<Seat> getPlayBookedSeats(@RequestBody PlayPK id) throws EntityNotFoundException {
+		Play play = BasicEntityUtils.entityFinder(playRepository.findById(id));
+		List<Seat> totalBookedSeats = new ArrayList<>();
+		List<Seat> alradyBookedSeats = play.getBooks().stream()
+			.map(Booking::getSeats)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toList());
+		List<Seat> temporaryBookedSeats = temporalBookingsRepository.getTemporalSeatsList().entrySet()
+			.stream()
+			.map(Map.Entry::getValue)
+			.map(TemporalSeats::getSeats)
+			.flatMap(Collection::stream)
+			.collect(Collectors.toList());
+		totalBookedSeats.addAll(alradyBookedSeats);
+		totalBookedSeats.addAll(temporaryBookedSeats);
+		return totalBookedSeats;
 	}
 }

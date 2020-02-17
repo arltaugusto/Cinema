@@ -1,13 +1,16 @@
 package com.project.cinema;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,21 +25,34 @@ import com.project.entities.User;
 import com.project.exceptions.EmailUnavailableException;
 import com.project.exceptions.InvalidCredentialsException;
 import com.project.repositories.UserRepository;
+import com.project.requestobjects.AuthenticationRequest;
+import com.project.requestobjects.AuthenticationResponse;
 import com.project.requestobjects.UserDTO;
+import com.project.security.JwtUtils;
+import com.project.security.MyUserDetailsService;
 import com.project.utils.BasicEntityUtils;
 
 @CrossOrigin
 @RestController
 @RequestMapping(path="/user") 
 public class UserController {
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	@Autowired
+	private MyUserDetailsService userDetailsService;
+	@Autowired
+	private JwtUtils jwtTokenUtils;
 	@Autowired 
 	private UserRepository userRepository;
+	
 	private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid Username or password";
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<User> addNewUser (@RequestBody UserDTO user) throws EmailUnavailableException {
 		String email = user.getEmail();
-		User us = new User(email, user.getName(), false, user.getPassword());
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); 
+		User us = new User(email, user.getName(), "USER", passwordEncoder.encode(user.getPassword()));
 		checkEmailStatus(email);
 		return BasicEntityUtils.save(us, userRepository);
 	}
@@ -63,16 +79,17 @@ public class UserController {
 	}
 	
 	@PostMapping(path="/login", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<User> login (@RequestBody UserDTO user) throws InvalidCredentialsException {
-		Optional<User> u = userRepository.findByEmailInAndPasswordIn(user.getEmail(), user.getPassword());
-		if(u.isPresent()) {
-			User us = u.get();
-			us.setBooks(us.getBooks().stream()
-				.filter(book -> book.getPlay().getPlayPK().getStartTime().compareTo(LocalDateTime.now()) > 0)
-				.collect(Collectors.toList()));
-			return new ResponseEntity<>(us, HttpStatus.OK);
+	public @ResponseBody ResponseEntity<AuthenticationResponse> login (@RequestBody AuthenticationRequest authenticationRequest) throws InvalidCredentialsException {
+		try {
+		authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+				);
+		} catch(BadCredentialsException e) {
+			throw e;
 		}
-		throw new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE);
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+		final String jwt = jwtTokenUtils.generateToken(userDetails);
+		return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
 	}
 	
 	@GetMapping(path="/all")

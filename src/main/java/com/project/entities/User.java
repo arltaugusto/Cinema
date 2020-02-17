@@ -29,7 +29,7 @@ public class User {
 	private String userId;
 	private String email;
 	private String name;
-	private Boolean isAdmin;
+	private String role;
 	
 	@JsonProperty(access = Access.WRITE_ONLY)
 	private String password;
@@ -39,21 +39,20 @@ public class User {
 	
 	public User() {}
 	
-	public User(String email, String name, Boolean isAdmin, String password) {
-		super();
+	public User(String email, String name, String role, String password) {
 		this.email = email;
 		this.name = name;
-		this.isAdmin = isAdmin;
+		this.role = role;
 		this.password = password;
 	}
 	
 	
-	public Boolean getIsAdmin() {
-		return isAdmin;
+	public String getIsAdmin() {
+		return role;
 	}
 
-	public void setIsAdmin(Boolean isAdmin) {
-		this.isAdmin = isAdmin;
+	public void setIsAdmin(String role) {
+		this.role = role;
 	}
 
 	public String getEmail() {

@@ -53,7 +53,6 @@ public class BookController {
 	@Autowired private UserRepository userRepository;
 	@Autowired private PlayRepository playRepository;
 	@Autowired private SeatRepository seatRepository;
-	@Autowired private SalaRepository roomRepository;
 	@Autowired private TemporalBookingsRepository temporalBookingsRepository;
 
 	@PostMapping(path = "/bookTemporalSeat")

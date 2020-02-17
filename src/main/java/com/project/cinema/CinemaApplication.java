@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@ComponentScan({"com.project.cinema","com.project.requestobjects","com.project.exceptions", "com.project.utils"})
+@ComponentScan({"com.project.cinema","com.project.requestobjects","com.project.exceptions", "com.project.utils", "com.project.security"})
 @EntityScan("com.project.entities")
 @EnableJpaRepositories("com.project.repositories")
 @EnableScheduling

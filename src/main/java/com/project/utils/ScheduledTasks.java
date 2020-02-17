@@ -29,4 +29,14 @@ public class ScheduledTasks {
 				map.setValue(temporalSeats);
 			});
 	}
+	
+	@Scheduled(fixedRate = 1000 * 60 * 10)
+	public void cleanExpiredLoginSessions() {
+		Map<String, TemporalSeats> cachedBookings = temporalBookingsRepository.getTemporalSeatsList();
+		if(MapUtils.isNotEmpty(cachedBookings))
+			cachedBookings.entrySet().stream()
+			.filter(map -> map.getValue().getInitTime().plusMinutes(30).compareTo(LocalDateTime.now()) < 0)
+			.map(Map.Entry::getKey)
+			.forEach(key -> cachedBookings.remove(key));
+	}
 }

@@ -30,6 +30,10 @@ public class Seat {
 	 
 	public Seat() {}
 	
+	public Seat(SeatPK seatPk) {
+		this.seatPk = seatPk;
+	}
+	
 	public Seat(SeatPK seatPk, Room room) {
 		this.seatPk = seatPk;
 		this.room = room;

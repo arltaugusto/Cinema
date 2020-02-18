@@ -32,7 +32,6 @@ import com.project.exceptions.SeatAlreadyBookedException;
 import com.project.exceptions.SessionTimeOutException;
 import com.project.repositories.BookRepository;
 import com.project.repositories.PlayRepository;
-import com.project.repositories.SalaRepository;
 import com.project.repositories.SeatRepository;
 import com.project.repositories.TemporalBookingsRepository;
 import com.project.repositories.UserRepository;
@@ -61,7 +60,7 @@ public class BookController {
 		SeatPK seatPk = new SeatPK(seatRequest.getRoomId(), seatRequest.getSeatId());
 		Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
 		checkSeatAvailability(seat, seatRequest.getPlayPk());
-		if (temporalBookingsRepository.getTemporalSeatsList().containsKey(userId)) {
+		if (temporalBookingsRepository.getTemporalSeatsList().containsKey(userId) && temporalBookingsRepository.getTemporalSeatsByUserId(userId).getPlayPk().equals(seatRequest.getPlayPk())) {
 			TemporalSeats temporalSeat = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
 			if(!temporalSeat.isOpen()) {
 				temporalBookingsRepository.remove(userId);
@@ -74,7 +73,7 @@ public class BookController {
 			userSeatList.add(seat);
 			temporalBookingsRepository.put(userId, new TemporalSeats(userSeatList, userId, seatRequest.getPlayPk(), LocalDateTime.now()));
 		}
-		return new ResponseEntity<>("Succed", HttpStatus.OK);
+		return new ResponseEntity<>("Booked", HttpStatus.OK);
 	}
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")

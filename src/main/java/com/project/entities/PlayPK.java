@@ -23,6 +23,14 @@ public class PlayPK implements Serializable {
 	@Column(name = "startTime")
 	private LocalDateTime startTime;
 	
+	public PlayPK() {}
+	
+	public PlayPK(int movieId, int roomId, LocalDateTime startTime) {
+		this.movieId = movieId;
+		this.roomId = roomId;
+		this.startTime = startTime;
+	}
+
 	public int getMovieId() {
 		return movieId;
 	}

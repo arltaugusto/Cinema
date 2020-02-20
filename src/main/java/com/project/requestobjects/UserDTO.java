@@ -10,7 +10,7 @@ public class UserDTO {
 	private String userId;
 	private String email;
 	private String name;
-	private Boolean isAdmin;
+	
 	
 	private String password;
 	

@@ -47,11 +47,11 @@ public class User {
 	}
 	
 	
-	public String getIsAdmin() {
+	public String getRole() {
 		return role;
 	}
 
-	public void setIsAdmin(String role) {
+	public void setRole(String role) {
 		this.role = role;
 	}
 

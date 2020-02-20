@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.project.entities.Movie;
 import com.project.entities.Play;
@@ -37,7 +38,9 @@ import com.project.utils.BasicEntityUtils;
 @EnableScheduling
 @EnableCaching
 public class CinemaApplication {
+	
 	private boolean init = false;
+	
 	public static void main(String[] args) { 
 		SpringApplication.run(CinemaApplication.class, args);
 	}
@@ -51,9 +54,11 @@ public class CinemaApplication {
 				salaRepository.save(room);
 				seatRepository.saveAll(createRoomSeats(room));
 			}
+			BCryptPasswordEncoder encoder =new BCryptPasswordEncoder();
+			String password = encoder.encode("holahola");
 			List<User> users = Arrays.asList(
-				new User("admin@gmail.com", "Admin", "ROLE_ADMIN", "holahola"),
-				new User("user@gmail.com", "User", "ROLE_USER", "holahola")
+				new User("admin@gmail.com", "Admin", "ROLE_ADMIN", password),
+				new User("user@gmail.com", "User", "ROLE_USER", password)
 			);
 			List<Movie> movies = Arrays.asList(
 				new Movie("Star Wars", 180, "None", "synopsis of star wars"),
@@ -69,7 +74,7 @@ public class CinemaApplication {
 
 	private List<Seat> createRoomSeats(Room room) {
 		List<Seat> seats = new ArrayList<>();
-		for(int i = 1; i <=60; i++) {
+		for(int i = 1; i <= 60; i++) {
 			seats.add(new Seat(new SeatPK(room.getId(), i), room));
 		}
 		return seats;

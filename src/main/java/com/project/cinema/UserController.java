@@ -17,12 +17,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.entities.User;
 import com.project.exceptions.EmailUnavailableException;
+import com.project.exceptions.EntityNotFoundException;
 import com.project.exceptions.InvalidCredentialsException;
 import com.project.repositories.UserRepository;
 import com.project.requestobjects.AuthenticationRequest;
@@ -52,7 +54,7 @@ public class UserController {
 	public @ResponseBody ResponseEntity<User> addNewUser (@RequestBody UserDTO user) throws EmailUnavailableException {
 		String email = user.getEmail();
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); 
-		User us = new User(email, user.getName(), "USER", passwordEncoder.encode(user.getPassword()));
+		User us = new User(email, user.getName(), "ROLE_USER", passwordEncoder.encode(user.getPassword()));
 		checkEmailStatus(email);
 		return BasicEntityUtils.save(us, userRepository);
 	}
@@ -100,5 +102,11 @@ public class UserController {
 	@GetMapping(path="/{id}")
 	public @ResponseBody User getUserData(@PathVariable("id") String id) {
 		return userRepository.findById(id).get();
+	}
+	
+	@GetMapping(path="/getUser") 
+	public @ResponseBody User getUserFromJwt(@RequestHeader("Authorization") String jwt) throws EntityNotFoundException {
+		String userToken = jwt.split(StringUtils.SPACE)[1];
+		return BasicEntityUtils.entityFinder(userRepository.findByEmail(jwtTokenUtils.extractUsername(userToken)));
 	}
 }

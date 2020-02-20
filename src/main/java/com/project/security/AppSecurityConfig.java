@@ -25,8 +25,8 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http
 			.authorizeRequests()
-				.antMatchers("/movies/all", "user/add", "user/login").permitAll()
-				.antMatchers("/books/*", "/movies/{\\d+}", "/plays/getPlay", "/plays/getPlayBookedSeats", "users/modify").hasAnyRole("USER", "ADMIN")
+				.antMatchers("/movies/all", "user/add", "user/login", "/price/add").permitAll()
+				.antMatchers("/books/*", "/movies/{\\d+}", "/plays/getPlay", "/plays/getPlayBookedSeats", "users/modify", "user/getUser").hasAnyRole("USER", "ADMIN")
 				.antMatchers("/movies/add", "/movies/delete", "/movies/modify", "/plays/add", "/plays/delete").hasRole("ADMIN")
 			.and()
 			.formLogin()

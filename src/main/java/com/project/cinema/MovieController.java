@@ -94,8 +94,8 @@ public class MovieController {
 		return movieRepository.findAll();
 	}
 	
-	@GetMapping(path="/plays/{id}")
-	public @ResponseBody List<Play> getMoviePlays(@PathVariable("id") int id) throws EntityNotFoundException {
-		return BasicEntityUtils.entityFinder(movieRepository.findById(id)).getPlays();
+	@GetMapping(path="/{id}")
+	public @ResponseBody List<Play> getMoviePlays(@PathVariable("id") String id) throws EntityNotFoundException {
+		return BasicEntityUtils.entityFinder(movieRepository.findById(Integer.parseInt(id))).getPlays();
 	}
 }

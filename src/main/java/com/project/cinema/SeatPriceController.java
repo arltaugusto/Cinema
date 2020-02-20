@@ -41,8 +41,8 @@ public class SeatPriceController {
 	@GetMapping("/getCurrentPrices")
 	public ResponseEntity<SeatPrice> getCurrentPrices () throws EntityNotFoundException {
 		Optional<SeatPrice> lastSeatPrice = seatPriceRepository.findAll().stream()
-				.filter(seatPrice -> seatPrice.getActivationDate().compareTo(LocalDateTime.now()) < 0)
-				.max(Comparator.comparing(SeatPrice::getActivationDate).thenComparing(SeatPrice::getSetDate));
+			.filter(seatPrice -> seatPrice.getActivationDate().compareTo(LocalDateTime.now()) < 0)
+			.max(Comparator.comparing(SeatPrice::getActivationDate).thenComparing(SeatPrice::getSetDate));
 		return new ResponseEntity<>(BasicEntityUtils.entityFinder(lastSeatPrice), HttpStatus.OK);
 	}
 }

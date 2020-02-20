@@ -2,8 +2,10 @@ package com.project.cinema;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -27,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.project.entities.Movie;
 import com.project.entities.Play;
-import com.project.entities.User;
+import com.project.exceptions.EntityNotFoundException;
 import com.project.repositories.BookRepository;
 import com.project.repositories.MovieRepository;
 import com.project.repositories.PlayRepository;
@@ -58,11 +60,15 @@ public class MovieController {
 	}
 	
 	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<Movie> modifyMovie (@RequestBody MovieDTO movie) {
-		Optional<Movie> mov = movieRepository.findById(movie.getId());
-		return BasicEntityUtils.save(mov.isPresent() ? mov.get() : null, movieRepository);
+	public @ResponseBody ResponseEntity<Movie> modifyMovie (@RequestBody MovieDTO movie) throws EntityNotFoundException {
+		Movie mov = BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId()));
+		mov.setDuration(movie.getDuration());
+		mov.setName(movie.getName());
+		mov.setSynopsis(movie.getSynopsis());
+		return BasicEntityUtils.save(mov, movieRepository);
 	}
 	
+	//TODO test
 	@PostMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteMovie(@RequestBody MovieDTO movieRequest) throws IOException {
 		Optional<Movie> movieOptional = movieRepository.findById(movieRequest.getId());
@@ -72,6 +78,9 @@ public class MovieController {
 			StorageUtils.deleteImage(Paths.get(movie.getImagePath()));
 			plays.stream()
 				.map(Play::getBooks)
+				.map(bookingList -> bookingList.stream()
+					.filter(book -> book.getPlay().getPlayPK().getStartTime().compareTo(LocalDateTime.now()) > 0)
+					.collect(Collectors.toList()))
 				.forEach(bookRepository::deleteAll);
 			playRepository.deleteAll(plays);
 			movieRepository.delete(movie);
@@ -85,8 +94,8 @@ public class MovieController {
 		return movieRepository.findAll();
 	}
 	
-	@GetMapping(path="/{id}")
-	public @ResponseBody List<Play> getMoviePlays(@PathVariable("id") int id) {
-		return movieRepository.findById(id).get().getPlays();
+	@GetMapping(path="/plays/{id}")
+	public @ResponseBody List<Play> getMoviePlays(@PathVariable("id") int id) throws EntityNotFoundException {
+		return BasicEntityUtils.entityFinder(movieRepository.findById(id)).getPlays();
 	}
 }

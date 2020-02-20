@@ -51,14 +51,9 @@ public class PlayController {
 	private static final long MINUTES_BEFORE_MOVIE = 15; 
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<Play> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException, InvalidCredentialsException {
-		Optional<Movie> optionalMovie = movieRepository.findById(playPk.getMovieId()); 
-		Optional<Room> optionalRoom = salaRepository.findById(playPk.getRoomId());
-		Movie movie =  optionalMovie.isPresent() ? optionalMovie.get() : null;
-		Room sala = optionalRoom.isPresent() ? optionalRoom.get() : null;
-		if (movie == null || sala == null ) {
-			throw new InvalidCredentialsException("Bad Request");
-		}
+	public @ResponseBody ResponseEntity<Play> addNewPlay (@RequestBody PlayPK playPk) throws NoTimeAvailableException, EntityNotFoundException {
+		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(playPk.getMovieId()));
+		Room sala = BasicEntityUtils.entityFinder(salaRepository.findById(playPk.getRoomId()));
 		LocalDateTime endTime = playPk.getStartTime().plusMinutes(movie.getDuration());
 		Play play = new Play(playPk, endTime, 60, movie, sala);
 		isSalaAvailable(play);
@@ -74,17 +69,16 @@ public class PlayController {
 	}
 	
 	@PostMapping(path = "/delete")
-	public @ResponseBody ResponseEntity<String> deletePlay(@RequestBody PlayPK playPk) {
-		Optional<Play> playOptional = playRepository.findById(playPk);
-		if(playOptional.isPresent()) {
-			Play play = playOptional.get();
+	public @ResponseBody ResponseEntity<String> deletePlay(@RequestBody PlayPK playPk) throws EntityNotFoundException {
+		Play play = BasicEntityUtils.entityFinder(playRepository.findById(playPk));
+		if(play.getPlayPK().getStartTime().compareTo(LocalDateTime.now()) > 0) {
 			bookRepository.deleteAll(play.getBooks());
-			playRepository.delete(play);
-			return new ResponseEntity<>("Deleted", HttpStatus.OK);
 		}
-		return new ResponseEntity<>("Play not Found", HttpStatus.BAD_REQUEST);
+		playRepository.delete(play);
+		return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}
 	
+	//TODO test
 	private void isSalaAvailable(Play play) throws NoTimeAvailableException {
 		LocalDateTime newStartTime = play.getPlayPK().getStartTime();
 		LocalDateTime newEndTime = play.getEndTime();
@@ -105,6 +99,7 @@ public class PlayController {
 		return new ResponseEntity<>(BasicEntityUtils.entityFinder(playRepository.findById(id)), HttpStatus.OK);
 	}
 	
+	//TODO test
 	@PostMapping(path = "/getPlayBookedSeats")
 	public @ResponseBody List<Seat> getPlayBookedSeats(@RequestBody PlayPK id) throws EntityNotFoundException {
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(id));

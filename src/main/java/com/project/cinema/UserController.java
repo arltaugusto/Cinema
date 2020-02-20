@@ -67,17 +67,17 @@ public class UserController {
 	}
 
 	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<User> modifyUser (@RequestBody UserDTO user) throws EmailUnavailableException {
+	public @ResponseBody ResponseEntity<User> modifyUser (@RequestBody UserDTO user) throws EmailUnavailableException, EntityNotFoundException, InvalidCredentialsException {
 		String newEmail = user.getEmail();
+		User userDb = BasicEntityUtils.entityFinder(userRepository.findById(user.getUserId()));
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		if(!passwordEncoder.matches(user.getPassword(), userDb.getPassword())) {
+			throw new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE);
+		}
 		if(StringUtils.isNotBlank(newEmail))
 			checkEmailStatus(newEmail);
-		Optional<User> us = userRepository.findById(user.getUserId());
-		if(us.isPresent()) {
-			User userDb = us.get();
-			userDb.updateData(user);
-			return BasicEntityUtils.save(userDb, userRepository);
-		}
-		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		userDb.updateData(user);
+		return BasicEntityUtils.save(userDb, userRepository);
 	}
 	
 	@PostMapping(path="/login", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests

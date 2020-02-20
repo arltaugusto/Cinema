@@ -99,12 +99,9 @@ public class User {
 	public void updateData(UserDTO user) {
 		String newEmail = user.getEmail();
 		String newName = user.getName();
-		String newPassword = user.getPassword();
 		if(StringUtils.isNotBlank(newEmail))
 			setEmail(newEmail);
 		if(StringUtils.isNotBlank(newName))
 			setName(newName);
-		if(StringUtils.isNotBlank(newPassword))
-			setPassword(newPassword);
 	}
 }

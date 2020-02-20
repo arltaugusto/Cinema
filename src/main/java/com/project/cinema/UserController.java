@@ -84,12 +84,12 @@ public class UserController {
 	public @ResponseBody ResponseEntity<AuthenticationResponse> login (@RequestBody AuthenticationRequest authenticationRequest) throws InvalidCredentialsException {
 		try {
 		authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(authenticationRequest.getUsername(), authenticationRequest.getPassword())
+				new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
 				);
 		} catch(BadCredentialsException e) {
 			throw e;
 		}
-		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getUsername());
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
 		final String jwt = jwtTokenUtils.generateToken(userDetails);
 		return new ResponseEntity<>(new AuthenticationResponse(jwt), HttpStatus.OK);
 	}

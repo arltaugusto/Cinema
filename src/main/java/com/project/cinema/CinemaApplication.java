@@ -39,7 +39,7 @@ import com.project.utils.BasicEntityUtils;
 @EnableCaching
 public class CinemaApplication {
 	
-	private boolean init = true;
+	private boolean init = false;
 	
 	public static void main(String[] args) { 
 		SpringApplication.run(CinemaApplication.class, args);

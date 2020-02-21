@@ -74,7 +74,7 @@ public class UserController {
 		if(!passwordEncoder.matches(user.getPassword(), userDb.getPassword())) {
 			throw new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE);
 		}
-		if(StringUtils.isNotBlank(newEmail))
+		if(StringUtils.isNotBlank(newEmail) && !userDb.getEmail().equals(newEmail))
 			checkEmailStatus(newEmail);
 		userDb.updateData(user);
 		return BasicEntityUtils.save(userDb, userRepository);

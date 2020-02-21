@@ -33,6 +33,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 		String username = null;
 		String jwt = null;
 		if (CorsUtils.isPreFlightRequest(request) && authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			response.setStatus(HttpServletResponse.SC_OK);
 			jwt = authorizationHeader.split(StringUtils.SPACE)[1];
 			username = jwtUtils.extractUsername(jwt);
 		}

@@ -94,7 +94,7 @@ public class MovieController {
 		return movieRepository.findAll();
 	}
 	
-	@PostMapping(path="/getMoviePlays")
+	@PostMapping(path="/getMoviePlays", consumes = "application/json")
 	public @ResponseBody List<Play> getMoviePlays(@RequestBody MovieDTO movie) throws EntityNotFoundException {
 		return BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId())).getPlays();
 	}

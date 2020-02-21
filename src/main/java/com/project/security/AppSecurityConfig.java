@@ -3,6 +3,7 @@ package com.project.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,7 +25,10 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
+			.cors().disable()
+			
 			.authorizeRequests()
+				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 				.antMatchers("/movies/all", "user/add", "user/login", "/price/add").permitAll()
 				.antMatchers("/books/*", "/movies/{\\d+}", "/plays/getPlay", "/plays/getPlayBookedSeats", "users/modify", "user/getUser", "movie/plays/{\\d+}").hasAnyRole("USER", "ADMIN")
 				.antMatchers("/movies/add", "/movies/delete", "/movies/modify", "/plays/add", "/plays/delete", "/plays/all").hasRole("ADMIN")

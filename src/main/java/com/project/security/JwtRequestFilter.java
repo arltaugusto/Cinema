@@ -14,10 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.project.repositories.TemporalBookingsRepository;
-import com.project.repositories.UserRepository;
 
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter{
@@ -34,7 +32,7 @@ public class JwtRequestFilter extends OncePerRequestFilter{
 		final String authorizationHeader = request.getHeader("Authorization");
 		String username = null;
 		String jwt = null;
-		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+		if (CorsUtils.isPreFlightRequest(request) && authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			jwt = authorizationHeader.split(StringUtils.SPACE)[1];
 			username = jwtUtils.extractUsername(jwt);
 		}

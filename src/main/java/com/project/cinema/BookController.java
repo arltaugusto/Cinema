@@ -47,7 +47,6 @@ import com.project.utils.SeatManager;
 @RequestMapping(path="/books")
 public class BookController {
 
-	private static final Logger log = LoggerFactory.getLogger(BookController.class);
 	@Autowired private BookRepository bookRepository;
 	@Autowired private UserRepository userRepository;
 	@Autowired private PlayRepository playRepository;
@@ -59,21 +58,39 @@ public class BookController {
 		String userId = seatRequest.getUserId();
 		SeatPK seatPk = new SeatPK(seatRequest.getRoomId(), seatRequest.getSeatId());
 		Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
-		checkSeatAvailability(seat, seatRequest.getPlayPk());
+		Play play = BasicEntityUtils.entityFinder(playRepository.findById(seatRequest.getPlayPk()));
+		checkSeatAvailability(seat, play);
 		if (temporalBookingsRepository.getTemporalSeatsList().containsKey(userId) && temporalBookingsRepository.getTemporalSeatsByUserId(userId).getPlayPk().equals(seatRequest.getPlayPk())) {
 			TemporalSeats temporalSeat = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
 			if(!temporalSeat.isOpen()) {
-				temporalBookingsRepository.updateStatus(userId, null);
+				temporalBookingsRepository.remove(userId);
 				throw new SessionTimeOutException("Booking session expired");
 			}
 			temporalSeat.addSeat(seat);
-			temporalBookingsRepository.updateStatus(userId, temporalSeat);
 		} else {
 			List<Seat> userSeatList = new ArrayList<>();
 			userSeatList.add(seat);
-				temporalBookingsRepository.updateStatus(userId, new TemporalSeats(userSeatList, userId, seatRequest.getPlayPk(), LocalDateTime.now()));
+			temporalBookingsRepository.put(userId, new TemporalSeats(userSeatList, userId, seatRequest.getPlayPk(), LocalDateTime.now()));
 		}
+		play.setAvailableSeats(play.getAvailableSeats() - 1);
+		playRepository.save(play);
 		return new ResponseEntity<>("{\"message\": \"booked\"}", HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "/removeTemporalSeat")
+	public @ResponseBody ResponseEntity<String> removeTemporalSeat(@RequestBody SeatRequest seatRequest) throws EntityNotFoundException {
+		SeatPK seatPk = new SeatPK(seatRequest.getRoomId(), seatRequest.getSeatId());
+		Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
+		Play play = BasicEntityUtils.entityFinder(playRepository.findById(seatRequest.getPlayPk()));
+		List<Seat> seats = temporalBookingsRepository.getTemporalSeatsByUserId(seatRequest.getUserId()).getSeats();
+		if(seats.contains(seat)) {
+			play.setAvailableSeats(play.getAvailableSeats() + 1);
+			temporalBookingsRepository.removeSeat(seatRequest.getUserId(), seat);
+			playRepository.save(play);
+			return new ResponseEntity<>("{\"message\": \"removed\"}", HttpStatus.OK);
+		}
+		return new ResponseEntity<>("{\"message\": \"You didn't booked this seat\"}", HttpStatus.BAD_REQUEST);
+
 	}
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
@@ -85,7 +102,7 @@ public class BookController {
 		List<Seat> seats = temporalSeatsByUserId.getSeats();
 		Booking booking = new Booking(user, play, seats);
 		play.setAvailableSeats(play.getAvailableSeats() - seats.size());
-		temporalBookingsRepository.remove(userId, temporalSeatsByUserId);
+		temporalBookingsRepository.remove(userId);
 		bookRepository.save(booking);
 		playRepository.save(play);
 		return new ResponseEntity<>(booking, HttpStatus.OK);
@@ -106,10 +123,9 @@ public class BookController {
 			return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}
 
-	private void checkSeatAvailability(Seat seat, PlayPK playPk) throws SeatAlreadyBookedException, EntityNotFoundException {
-		Play play= BasicEntityUtils.entityFinder(playRepository.findById(playPk));
+	private void checkSeatAvailability(Seat seat, Play play) throws SeatAlreadyBookedException {
 		List<TemporalSeats> temporalBookings = temporalBookingsRepository.getTemporalSeatsList().entrySet().stream()
-			.filter(map -> map.getValue() != null && map.getValue().getPlayPk().equals(playPk))
+			.filter(map -> map.getValue() != null && map.getValue().getPlayPk().equals(play.getPlayPK()))
 			.map(Map.Entry::getValue)
 			.collect(Collectors.toList());
 		check(play.getBooks(), seat);

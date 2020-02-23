@@ -87,8 +87,8 @@ public class PlayController {
 			LocalDateTime currentStartTime = p.getPlayPK().getStartTime();
 			LocalDateTime currentEndTime = p.getEndTime();
 			if (!((newStartTime.compareTo(currentStartTime) < 0 && newEndTime.compareTo(currentStartTime) < 0) ||
-					(newStartTime.compareTo(currentEndTime) > 0 && newEndTime.compareTo(currentEndTime) > 0)
-					&& p.getPlayPK().getRoomId() == play.getPlayPK().getRoomId())) {
+					(newStartTime.compareTo(currentEndTime) > 0 && newEndTime.compareTo(currentEndTime) > 0)) 
+					&& p.getPlayPK().getRoomId() == play.getPlayPK().getRoomId()) {
 				throw new NoTimeAvailableException(play);
 			}
 		}

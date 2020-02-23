@@ -7,7 +7,7 @@ import com.project.entities.PlayPK;
 import com.project.entities.Seat;
 import com.project.utils.SeatManager;
 
-public class TemporalSeats implements SeatManager{
+public class TemporalSeats implements SeatManager {
 	
 	private List<Seat> seats;
 	private String userId;
@@ -44,15 +44,18 @@ public class TemporalSeats implements SeatManager{
 	public List<Seat> getSeats() {
 		return seats;
 	}
+	
 	public void setSeats(List<Seat> seat) {
 		this.seats = seat;
 	}
-	public String getUserId() {
-		return userId;
-	}
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
+	
+//	public String getUserId() {
+//		return userId;
+//	}
+//	
+//	public void setUserId(String userId) {
+//		this.userId = userId;
+//	}
 	
 	public void addSeat(Seat seat) {
 		seats.add(seat);
@@ -61,11 +64,17 @@ public class TemporalSeats implements SeatManager{
 	public PlayPK getPlayPk() {
 		return playPk;
 	}
+	
 	public void setPlayPk(PlayPK play) {
 		this.playPk = play;
 	}
+	
 	public void clearSeats() {
 		seats.clear();
+	}
+	
+	public void removeSeat(Seat seat) {
+		seats.remove(seat);
 	}
 	
 }

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
+import com.project.entities.Seat;
 import com.project.repositories.TemporalBookingsRepository;
 import com.project.requestobjects.TemporalSeats;
 
@@ -17,29 +18,28 @@ public class CachedBookings implements TemporalBookingsRepository {
 	public CachedBookings() {}
 	
 	@Override
-	@Cacheable("bookings")
 	public TemporalSeats getTemporalSeatsByUserId(String userId) {
 		return temporalSeatsList.get(userId);
 	}
 
 	@Override
-	public void remove(String userId, TemporalSeats temporalSeats) {
-		temporalSeatsList.remove(userId, temporalSeats);
+	public void remove(String userId) {
+		temporalSeatsList.remove(userId);
 	}
 
 	@Override
-	public void updateStatus(String userId, TemporalSeats temporalSeats) {
+	public void put(String userId, TemporalSeats temporalSeats) {
 		temporalSeatsList.put(userId, temporalSeats);
 	}
 	
 	@Override
-	public void replace(String userId, TemporalSeats temporalSeats) {
-		temporalSeatsList.replace(userId, temporalSeats);
-	}
-	
-	@Cacheable("temporalSeats")
 	public Map<String, TemporalSeats> getTemporalSeatsList() {
 		return temporalSeatsList;
+	}
+
+	@Override
+	public void removeSeat(String userId, Seat seat) {
+		getTemporalSeatsByUserId(userId).removeSeat(seat); 
 	}
 
 }

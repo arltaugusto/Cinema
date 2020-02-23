@@ -23,23 +23,23 @@ public class CachedBookings implements TemporalBookingsRepository {
 	}
 
 	@Override
-	public void remove(String userId) {
-		temporalSeatsList.remove(userId);
+	public void remove(String userId, TemporalSeats temporalSeats) {
+		temporalSeatsList.remove(userId, temporalSeats);
 	}
 
 	@Override
-	public void addSeat(String userId, TemporalSeats temporalSeats) {
+	public void updateStatus(String userId, TemporalSeats temporalSeats) {
 		temporalSeatsList.put(userId, temporalSeats);
+	}
+	
+	@Override
+	public void replace(String userId, TemporalSeats temporalSeats) {
+		temporalSeatsList.replace(userId, temporalSeats);
 	}
 	
 	@Cacheable("temporalSeats")
 	public Map<String, TemporalSeats> getTemporalSeatsList() {
 		return temporalSeatsList;
-	}
-
-	@Override
-	public void put(String userId, TemporalSeats temporalSeats) {
-		temporalSeatsList.put(userId, temporalSeats);
 	}
 
 }

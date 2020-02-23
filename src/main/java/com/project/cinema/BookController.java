@@ -63,17 +63,17 @@ public class BookController {
 		if (temporalBookingsRepository.getTemporalSeatsList().containsKey(userId) && temporalBookingsRepository.getTemporalSeatsByUserId(userId).getPlayPk().equals(seatRequest.getPlayPk())) {
 			TemporalSeats temporalSeat = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
 			if(!temporalSeat.isOpen()) {
-				temporalBookingsRepository.remove(userId);
+				temporalBookingsRepository.updateStatus(userId, null);
 				throw new SessionTimeOutException("Booking session expired");
 			}
 			temporalSeat.addSeat(seat);
-			temporalBookingsRepository.addSeat(userId, temporalSeat);
+			temporalBookingsRepository.updateStatus(userId, temporalSeat);
 		} else {
 			List<Seat> userSeatList = new ArrayList<>();
 			userSeatList.add(seat);
-			temporalBookingsRepository.put(userId, new TemporalSeats(userSeatList, userId, seatRequest.getPlayPk(), LocalDateTime.now()));
+				temporalBookingsRepository.updateStatus(userId, new TemporalSeats(userSeatList, userId, seatRequest.getPlayPk(), LocalDateTime.now()));
 		}
-		return new ResponseEntity<>("Booked", HttpStatus.OK);
+		return new ResponseEntity<>("{\"message\": \"booked\"}", HttpStatus.OK);
 	}
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
@@ -81,10 +81,11 @@ public class BookController {
 		String userId = bookRequest.getUserId();
 		User user = BasicEntityUtils.entityFinder(userRepository.findById(userId));
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(bookRequest.getPlayPk()));
-		List<Seat> seats = temporalBookingsRepository.getTemporalSeatsByUserId(userId).getSeats();
+		TemporalSeats temporalSeatsByUserId = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
+		List<Seat> seats = temporalSeatsByUserId.getSeats();
 		Booking booking = new Booking(user, play, seats);
 		play.setAvailableSeats(play.getAvailableSeats() - seats.size());
-		temporalBookingsRepository.remove(userId);
+		temporalBookingsRepository.remove(userId, temporalSeatsByUserId);
 		bookRepository.save(booking);
 		playRepository.save(play);
 		return new ResponseEntity<>(booking, HttpStatus.OK);
@@ -108,7 +109,7 @@ public class BookController {
 	private void checkSeatAvailability(Seat seat, PlayPK playPk) throws SeatAlreadyBookedException, EntityNotFoundException {
 		Play play= BasicEntityUtils.entityFinder(playRepository.findById(playPk));
 		List<TemporalSeats> temporalBookings = temporalBookingsRepository.getTemporalSeatsList().entrySet().stream()
-			.filter(map -> map.getValue().getPlayPk().equals(playPk))
+			.filter(map -> map.getValue() != null && map.getValue().getPlayPk().equals(playPk))
 			.map(Map.Entry::getValue)
 			.collect(Collectors.toList());
 		check(play.getBooks(), seat);

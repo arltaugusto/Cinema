@@ -8,11 +8,13 @@ public interface TemporalBookingsRepository {
 	
 	public TemporalSeats getTemporalSeatsByUserId(String userId);
 	
-	public void remove(String userId);
+	public void remove(String userId, TemporalSeats temporalSeats);
 	
-	public void addSeat(String userId, TemporalSeats temporalSeats);
+	public void updateStatus(String userId, TemporalSeats temporalSeats);
 	
 	public Map<String, TemporalSeats> getTemporalSeatsList();
 	
-	public void put(String userId, TemporalSeats temporalSeats);
+	public void replace(String userId, TemporalSeats temporalSeats);
+
+	
 }

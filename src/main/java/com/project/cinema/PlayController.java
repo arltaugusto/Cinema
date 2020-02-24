@@ -47,7 +47,7 @@ public class PlayController {
 	@Autowired private PlayRepository playRepository;
 	@Autowired private SalaRepository salaRepository;
 	@Autowired private MovieRepository movieRepository;
-	private TemporalBookingsRepository temporalBookingsRepository;
+	@Autowired private TemporalBookingsRepository temporalBookingsRepository;
 	private static final long MINUTES_BEFORE_MOVIE = 15; 
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
@@ -111,6 +111,7 @@ public class PlayController {
 		List<Seat> temporaryBookedSeats = temporalBookingsRepository.getTemporalSeatsList().entrySet()
 			.stream()
 			.map(Map.Entry::getValue)
+			.filter(temporalSeats -> temporalSeats.getPlayPk().equals(id) )
 			.map(TemporalSeats::getSeats)
 			.flatMap(Collection::stream)
 			.collect(Collectors.toList());

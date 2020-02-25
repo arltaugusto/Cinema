@@ -1,7 +1,6 @@
 package com.project.cinema;
 
 import java.io.IOException;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +34,8 @@ import com.project.repositories.MovieRepository;
 import com.project.repositories.PlayRepository;
 import com.project.requestobjects.MovieDTO;
 import com.project.utils.BasicEntityUtils;
-import com.project.utils.StorageUtils;
+import com.project.utils.BucketName;
+import com.project.utils.StorageService;
 
 @Controller
 @CrossOrigin
@@ -50,13 +50,17 @@ public class MovieController {
 	@Autowired
 	private Environment environment;
 	
+	@Autowired StorageService storageService;
+	
 	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile")@Valid @NotNull @NotBlank MultipartFile imageFile) throws IOException {
-		MovieDTO movie = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
-		String path = environment.getProperty("images.directory") + imageFile.getOriginalFilename();
+		MovieDTO movieDto = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
+		Movie movie = new Movie(movieDto.getName(), movieDto.getDuration(), movieDto.getSynopsis());
+		String path = String.format("%s/%s", BucketName.MOVIE_IMAGE.getBucketName(), movie.getMovieId());
+		movie.setImagePath(imageFile.getOriginalFilename());
 		if(!imageFile.isEmpty())
-			StorageUtils.saveImage(imageFile, path);
-		return BasicEntityUtils.save(new Movie(movie.getName(), movie.getDuration(), path, movie.getSynopsis()), movieRepository);
+			storageService.saveImage(imageFile, path);
+		return BasicEntityUtils.save(movie, movieRepository);
 	}
 	
 	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
@@ -75,7 +79,7 @@ public class MovieController {
 		if(movieOptional.isPresent()) {
 			Movie movie = movieOptional.get();
 			List<Play> plays = movie.getPlays();
-			StorageUtils.deleteImage(Paths.get(movie.getImagePath()));
+//			StorageService.deleteImage(Paths.get(movie.getImagePath()));
 			plays.stream()
 				.map(Play::getBooks)
 				.map(bookingList -> bookingList.stream()
@@ -97,5 +101,11 @@ public class MovieController {
 	@PostMapping(path="/getMoviePlays", consumes = "application/json")
 	public @ResponseBody List<Play> getMoviePlays(@RequestBody MovieDTO movie) throws EntityNotFoundException {
 		return BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId())).getPlays();
+	}
+	
+	@GetMapping(path="image/download/{id}")
+	public byte[] getMovieImage(@PathVariable("id") String id) throws NumberFormatException, EntityNotFoundException {
+		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(Integer.parseInt(id)));
+		return storageService.downloadImage(movie);
 	}
 }

@@ -31,10 +31,9 @@ public class Movie {
 	
 	public Movie() {}
 
-	public Movie(String name, long duration, String imagePath, String synopsis) {
+	public Movie(String name, long duration, String synopsis) {
 		this.name = name;
 		this.duration = duration;
-		this.imagePath = imagePath;
 		this.synopsis = synopsis;
 	}
 
@@ -85,5 +84,7 @@ public class Movie {
 	public void setDuration(long duration) {
 		this.duration = duration;
 	}
+	
+	
 
 }

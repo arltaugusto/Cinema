@@ -61,8 +61,8 @@ public class CinemaApplication {
 				new User("user@gmail.com", "User", "ROLE_USER", password)
 			);
 			List<Movie> movies = Arrays.asList(
-				new Movie("Star Wars", 180, "None", "synopsis of star wars"),
-				new Movie("Harry Potter", 200, "None", "synopsis of harry potter")
+				new Movie("Star Wars", 180, "synopsis of star wars"),
+				new Movie("Harry Potter", 200,"synopsis of harry potter")
 			);
 			PlayPK playPk = new PlayPK(1, 1, LocalDateTime.of(2021, Month.AUGUST, 29, 19, 30));
 			movieRepository.saveAll(movies);

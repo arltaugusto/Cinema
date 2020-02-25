@@ -75,7 +75,8 @@ public class CinemaApplication {
 	private List<Seat> createRoomSeats(Room room) {
 		List<Seat> seats = new ArrayList<>();
 		for(int i = 1; i <= 60; i++) {
-			seats.add(new Seat(new SeatPK(room.getId(), i), room));
+	
+			seats.add(new Seat(new SeatPK(room.getId(), i), room,false));
 		}
 		return seats;
 	}

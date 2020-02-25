@@ -28,15 +28,19 @@ public class Seat {
 	@JsonIgnore
 	private List<Booking> books = new ArrayList<>();
 	 
+	private boolean isSuperSeat;
+	
+
 	public Seat() {}
 	
 	public Seat(SeatPK seatPk) {
 		this.seatPk = seatPk;
 	}
 	
-	public Seat(SeatPK seatPk, Room room) {
+	public Seat(SeatPK seatPk, Room room, boolean isSuperSeat) {
 		this.seatPk = seatPk;
 		this.room = room;
+		this.isSuperSeat = isSuperSeat;
 	}
 
 	public SeatPK getSeatPk() {
@@ -62,6 +66,15 @@ public class Seat {
 	public void setBooks(List<Booking> books) {
 		this.books = books;
 	}
+	
+	public boolean isSuperSeat() {
+		return isSuperSeat;
+	}
+
+	public void setSuperSeat(boolean isSuperSeat) {
+		this.isSuperSeat = isSuperSeat;
+	}
+
 
 	@Override
 	public boolean equals(Object obj) {

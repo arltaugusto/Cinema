@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.entities.Booking;
 import com.project.entities.Play;
-import com.project.entities.PlayPK;
 import com.project.entities.Seat;
 import com.project.entities.SeatPK;
 import com.project.entities.User;
@@ -54,7 +51,7 @@ public class BookController {
 	@Autowired private TemporalBookingsRepository temporalBookingsRepository;
 
 	@PostMapping(path = "/bookTemporalSeat")
-	public @ResponseBody ResponseEntity<String> bookTemporalSeat(@RequestBody SeatRequest seatRequest) throws SeatAlreadyBookedException, EntityNotFoundException, SessionTimeOutException {
+	public @ResponseBody ResponseEntity<Seat> bookTemporalSeat(@RequestBody SeatRequest seatRequest) throws SeatAlreadyBookedException, EntityNotFoundException, SessionTimeOutException {
 		String userId = seatRequest.getUserId();
 		SeatPK seatPk = new SeatPK(seatRequest.getRoomId(), seatRequest.getSeatId());
 		Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
@@ -74,7 +71,7 @@ public class BookController {
 		}
 		play.setAvailableSeats(play.getAvailableSeats() - 1);
 		playRepository.save(play);
-		return new ResponseEntity<>("{\"message\": \"booked\"}", HttpStatus.OK);
+		return new ResponseEntity<>(seat, HttpStatus.OK); 
 	}
 	
 	@PostMapping(path = "/removeTemporalSeat")

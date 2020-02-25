@@ -14,6 +14,8 @@ public class MovieDTO {
 	private String name;
 	private long duration;
 	private String synopsis;
+	private String imagePath;
+	
 	
 	private List<Play> plays = new ArrayList<>();
 	
@@ -65,4 +67,12 @@ public class MovieDTO {
 	public void setDuration(long duration) {
 		this.duration = duration;
 	}
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
+	}
+
 }

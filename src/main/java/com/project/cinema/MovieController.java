@@ -11,6 +11,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -50,13 +51,23 @@ public class MovieController {
 	@Autowired
 	private Environment environment;
 	
-	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile")@Valid @NotNull @NotBlank MultipartFile imageFile) throws IOException {
-		MovieDTO movie = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
-		String path = environment.getProperty("images.directory") + imageFile.getOriginalFilename();
-		if(!imageFile.isEmpty())
-			StorageUtils.saveImage(imageFile, path);
-		return BasicEntityUtils.save(new Movie(movie.getName(), movie.getDuration(), path, movie.getSynopsis()), movieRepository);
+//	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
+//	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile")@Valid @NotNull @NotBlank MultipartFile imageFile) throws IOException {
+//		MovieDTO movie = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
+//		String path = environment.getProperty("images.directory") + imageFile.getOriginalFilename();
+//		if(!imageFile.isEmpty())
+//			StorageUtils.saveImage(imageFile, path);
+//		return BasicEntityUtils.save(new Movie(movie.getName(), movie.getDuration(), path, movie.getSynopsis()), movieRepository);
+//	}
+	
+	@PostMapping(path="/add", consumes = "application/json") // Map ONLY POST Requests
+	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestBody MovieDTO movie) throws IllegalStateException {
+		String name = movie.getName();
+		long duration = movie.getDuration();
+				if(StringUtils.isEmpty(name) || StringUtils.isEmpty( String.valueOf(duration) )) {
+					throw new IllegalStateException("Incomplete values");
+				}
+			return BasicEntityUtils.save(new Movie(movie.getName(), movie.getDuration(), movie.getImagePath(), movie.getSynopsis()), movieRepository);
 	}
 	
 	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests

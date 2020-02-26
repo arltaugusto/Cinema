@@ -11,6 +11,7 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.GenericGenerator;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -99,9 +100,14 @@ public class User {
 	public void updateData(UserDTO user) {
 		String newEmail = user.getEmail();
 		String newName = user.getName();
+		String newPassword = user.getPassword();
 		if(StringUtils.isNotBlank(newEmail))
 			setEmail(newEmail);
 		if(StringUtils.isNotBlank(newName))
 			setName(newName);
+		if(StringUtils.isNotBlank(newPassword)) {
+			BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+			setPassword(passwordEncoder.encode(newPassword));
+		}
 	}
 }

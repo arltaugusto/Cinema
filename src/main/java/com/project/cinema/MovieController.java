@@ -12,14 +12,11 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,8 +57,8 @@ public class MovieController {
 		Movie movie = new Movie(movieDto.getName(), movieDto.getDuration(), movieDto.getSynopsis());
 		String path = String.format("%s/%s", BucketName.MOVIE_IMAGE.getBucketName(), movie.getMovieId());
 		movie.setImagePath(imageFile.getOriginalFilename());
-		if(!imageFile.isEmpty())
-			storageService.saveImage(imageFile, path);
+//		if(!imageFile.isEmpty())
+//			storageService.saveImage(imageFile, path);
 		return BasicEntityUtils.save(movie, movieRepository);
 	}
 	
@@ -104,10 +101,10 @@ public class MovieController {
 	public @ResponseBody List<Play> getMoviePlays(@RequestBody MovieDTO movie) throws EntityNotFoundException {
 		return BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId())).getPlays();
 	}
-	
-	@GetMapping(path="image/download/{id}")
-	public ResponseEntity<byte[]> getMovieImage(@PathVariable("id") String id) throws NumberFormatException, EntityNotFoundException {
-		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(id));
-		return new ResponseEntity<>(storageService.downloadImage(movie), HttpStatus.OK);
-	}
+//
+//	@GetMapping(path = "image/download/{id}")
+//	public byte[] getMovieImage(@PathVariable("id") String id) throws NumberFormatException, EntityNotFoundException {
+//		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(Integer.parseInt(id)));
+//		return storageService.downloadImage(movie);
+//	}
 }

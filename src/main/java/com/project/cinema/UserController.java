@@ -71,13 +71,17 @@ public class UserController {
 		String newEmail = user.getEmail();
 		User userDb = BasicEntityUtils.entityFinder(userRepository.findById(user.getUserId()));
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		if(!passwordEncoder.matches(user.getPassword(), userDb.getPassword())) {
-			throw new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE);
-		}
+		validatePassword(user, userDb, passwordEncoder);
 		if(StringUtils.isNotBlank(newEmail) && !userDb.getEmail().equals(newEmail))
 			checkEmailStatus(newEmail);
 		userDb.updateData(user);
 		return BasicEntityUtils.save(userDb, userRepository);
+	}
+	
+	private void validatePassword(UserDTO user, User userDb, BCryptPasswordEncoder passwordEncoder)	throws InvalidCredentialsException {
+		if(!passwordEncoder.matches(user.getPassword(), userDb.getPassword())) {
+			throw new InvalidCredentialsException(INVALID_CREDENTIALS_MESSAGE);
+		}
 	}
 	
 	@PostMapping(path="/login", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests

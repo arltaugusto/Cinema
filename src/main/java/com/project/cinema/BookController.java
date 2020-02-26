@@ -3,6 +3,7 @@ package com.project.cinema;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,12 +24,14 @@ import com.project.entities.Booking;
 import com.project.entities.Play;
 import com.project.entities.Seat;
 import com.project.entities.SeatPK;
+import com.project.entities.SeatPrice;
 import com.project.entities.User;
 import com.project.exceptions.EntityNotFoundException;
 import com.project.exceptions.SeatAlreadyBookedException;
 import com.project.exceptions.SessionTimeOutException;
 import com.project.repositories.BookRepository;
 import com.project.repositories.PlayRepository;
+import com.project.repositories.SeatPriceRepository;
 import com.project.repositories.SeatRepository;
 import com.project.repositories.TemporalBookingsRepository;
 import com.project.repositories.UserRepository;
@@ -49,6 +52,7 @@ public class BookController {
 	@Autowired private PlayRepository playRepository;
 	@Autowired private SeatRepository seatRepository;
 	@Autowired private TemporalBookingsRepository temporalBookingsRepository;
+	@Autowired private SeatPriceRepository seatPriceRepository;
 
 	@PostMapping(path = "/bookTemporalSeat")
 	public @ResponseBody ResponseEntity<Seat> bookTemporalSeat(@RequestBody SeatRequest seatRequest) throws SeatAlreadyBookedException, EntityNotFoundException, SessionTimeOutException {
@@ -97,7 +101,13 @@ public class BookController {
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(bookRequest.getPlayPk()));
 		TemporalSeats temporalSeatsByUserId = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
 		List<Seat> seats = temporalSeatsByUserId.getSeats();
-		Booking booking = new Booking(user, play, seats);
+		SeatPrice lastSeatPrice = BasicEntityUtils.entityFinder(seatPriceRepository.findAll().stream()
+				.filter(seatPrice -> seatPrice.getActivationDate().compareTo(LocalDateTime.now()) < 0)
+				.max(Comparator.comparing(SeatPrice::getActivationDate).thenComparing(SeatPrice::getSetDate)));
+		double total = seats.stream()
+			.mapToDouble(seat -> seat.isSuperSeat() ? lastSeatPrice.getSuperSeatPrice() : lastSeatPrice.getRegularSeatPrice())
+			.sum();
+		Booking booking = new Booking(user, play, seats, total);
 		play.setAvailableSeats(play.getAvailableSeats() - seats.size());
 		temporalBookingsRepository.remove(userId);
 		bookRepository.save(booking);

@@ -42,13 +42,16 @@ public class Booking implements SeatManager {
 	@ManyToMany
 	private List<Seat> seats = new ArrayList<>();
 	
-	public Booking() {};
+	private double total;
 	
-	public Booking(User user, Play play, List<Seat> seats) {
+	public Booking() {}
+	
+	public Booking(User user, Play play, List<Seat> seats, double total) {
 		this.user = user;
 		this.play = play;
 		this.seats = seats;
 		this.bookDate = LocalDateTime.now();
+		this.total = total;
 	}
 	
 	public List<Seat> getSeats() {
@@ -89,5 +92,13 @@ public class Booking implements SeatManager {
 
 	public void setUser(User user) {
 		this.user = user;
+	}
+
+	public double getTotal() {
+		return total;
+	}
+
+	public void setTotal(double total) {
+		this.total = total;
 	}
 }

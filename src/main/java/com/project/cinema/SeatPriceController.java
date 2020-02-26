@@ -28,19 +28,19 @@ public class SeatPriceController {
 	
 	@Autowired private SeatPriceRepository seatPriceRepository;
 	
-	@PostMapping(path = "/add")
+	@PostMapping(path = "/add", consumes = "application/json")
 	public ResponseEntity<String> addNewPrice (@RequestBody PriceDTO price) {
 		SeatPrice newSeatPrice = new SeatPrice(price.getActivationDate(), price.getSuperSeatPrice(), price.getRegularSeatPrice());
 		seatPriceRepository.save(newSeatPrice);
 		return new ResponseEntity<>("added", HttpStatus.OK);
 	}
 	
-	@GetMapping("/getAll")
+	@GetMapping(path="/getAll")
 	public ResponseEntity<List<SeatPrice>> getPrices () {
 		return new ResponseEntity<>(seatPriceRepository.findAll(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/getCurrentPrices")
+	@GetMapping(path="/getCurrentPrices")
 	public ResponseEntity<SeatPrice> getCurrentPrices () throws EntityNotFoundException {
 		Optional<SeatPrice> lastSeatPrice = seatPriceRepository.findAll().stream()
 			.filter(seatPrice -> seatPrice.getActivationDate().compareTo(LocalDateTime.now()) < 0)

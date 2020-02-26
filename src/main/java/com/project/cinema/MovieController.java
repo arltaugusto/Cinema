@@ -73,23 +73,17 @@ public class MovieController {
 	
 	//TODO test
 	@PostMapping(path = "/delete")
-	public @ResponseBody ResponseEntity<String> deleteMovie(@RequestBody MovieDTO movieRequest) throws IOException {
-		Optional<Movie> movieOptional = movieRepository.findById(movieRequest.getId());
-		if(movieOptional.isPresent()) {
-			Movie movie = movieOptional.get();
-			List<Play> plays = movie.getPlays();
-//			StorageService.deleteImage(Paths.get(movie.getImagePath()));
-			plays.stream()
-				.map(Play::getBooks)
-				.map(bookingList -> bookingList.stream()
-					.filter(book -> book.getPlay().getPlayPK().getStartTime().compareTo(LocalDateTime.now()) > 0)
-					.collect(Collectors.toList()))
-				.forEach(bookRepository::deleteAll);
-			playRepository.deleteAll(plays);
-			movieRepository.delete(movie);
-			return new ResponseEntity<>("Deleted", HttpStatus.OK);
-		}
-		return new ResponseEntity<>("Movie not Found", HttpStatus.BAD_REQUEST);
+	public @ResponseBody ResponseEntity<String> deleteMovie(@RequestBody MovieDTO movieRequest) throws EntityNotFoundException {
+		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(movieRequest.getId()));
+		List<Play> plays = movie.getPlays().stream()
+			.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now()))
+			.collect(Collectors.toList());
+		plays.stream()
+			.map(Play::getBooks)
+			.forEach(bookRepository::deleteAll);
+		playRepository.deleteAll(plays);
+		movieRepository.delete(movie);
+		return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}
 	
 	@GetMapping(path="/all")

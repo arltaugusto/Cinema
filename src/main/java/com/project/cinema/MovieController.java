@@ -50,7 +50,7 @@ public class MovieController {
 	private PlayRepository playRepository;
 	@Autowired
 	private Environment environment;
-	
+	@Autowired StorageService storageService;
 
 /*	@PostMapping(path="/add", consumes = "application/json") // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestBody MovieDTO movie) throws IllegalStateException {
@@ -60,7 +60,7 @@ public class MovieController {
 					throw new IllegalStateException("Incomplete values");
 				}
 			return BasicEntityUtils.save(new Movie(movie.getName(), movie.getDuration(), movie.getImagePath(), movie.getSynopsis()), movieRepository);
-	@Autowired StorageService storageService;
+	
 */	
 	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile")@Valid @NotNull @NotBlank MultipartFile imageFile) throws IOException {

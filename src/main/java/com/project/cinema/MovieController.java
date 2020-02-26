@@ -10,10 +10,11 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -52,16 +53,7 @@ public class MovieController {
 	private Environment environment;
 	@Autowired StorageService storageService;
 
-/*	@PostMapping(path="/add", consumes = "application/json") // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestBody MovieDTO movie) throws IllegalStateException {
-		String name = movie.getName();
-		long duration = movie.getDuration();
-				if(StringUtils.isEmpty(name) || StringUtils.isEmpty( String.valueOf(duration) )) {
-					throw new IllegalStateException("Incomplete values");
-				}
-			return BasicEntityUtils.save(new Movie(movie.getName(), movie.getDuration(), movie.getImagePath(), movie.getSynopsis()), movieRepository);
-	
-*/	
+
 	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile")@Valid @NotNull @NotBlank MultipartFile imageFile) throws IOException {
 		MovieDTO movieDto = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
@@ -114,8 +106,8 @@ public class MovieController {
 	}
 	
 	@GetMapping(path="image/download/{id}")
-	public byte[] getMovieImage(@PathVariable("id") String id) throws NumberFormatException, EntityNotFoundException {
-		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(Integer.parseInt(id)));
-		return storageService.downloadImage(movie);
+	public ResponseEntity<byte[]> getMovieImage(@PathVariable("id") String id) throws NumberFormatException, EntityNotFoundException {
+		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(id));
+		return new ResponseEntity<>(storageService.downloadImage(movie), HttpStatus.OK);
 	}
 }

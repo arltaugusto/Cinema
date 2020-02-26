@@ -9,7 +9,7 @@ import com.project.entities.Play;
 
 public class MovieDTO {
 
-	private int id;
+	private String id;
 	
 	private String name;
 	private long duration;
@@ -21,14 +21,14 @@ public class MovieDTO {
 	
 	public MovieDTO() {}
 
-	public MovieDTO(int id, String name, long duration, String synopsis) {
+	public MovieDTO(String id, String name, long duration, String synopsis) {
 		this.id = id;
 		this.name = name;
 		this.duration = duration;
 		this.synopsis = synopsis;
 	}
 
-	public int getId() {
+	public String getId() {
 		return id;
 	}
 
@@ -56,7 +56,7 @@ public class MovieDTO {
 		this.name = name;
 	}
 
-	public void setid(int id) {
+	public void setid(String id) {
 		this.id = id;
 	}
 

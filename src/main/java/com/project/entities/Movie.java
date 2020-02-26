@@ -2,6 +2,7 @@ package com.project.entities;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,15 +10,18 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.GenericGenerator;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.utils.IdGenerator;
 
 @Entity
 @Table(name = "movies")
 public class Movie {
 	
 	@Id
-	@GeneratedValue
-	private int movieId;
+	private String movieId;
 	
 	private String name;
 	private long duration;
@@ -31,7 +35,8 @@ public class Movie {
 	
 	public Movie() {}
 
-	public Movie(String name, long duration, String synopsis) {
+	public Movie( String name, long duration, String synopsis) {
+		this.movieId = UUID.randomUUID().toString().replace("-", StringUtils.EMPTY); 
 		this.name = name;
 		this.duration = duration;
 		this.synopsis = synopsis;
@@ -53,7 +58,7 @@ public class Movie {
 		this.imagePath = imagePath;
 	}
 
-	public int getMovieId() {
+	public String getMovieId() {
 		return movieId;
 	}
 
@@ -73,7 +78,7 @@ public class Movie {
 		this.name = name;
 	}
 
-	public void setMovieId(int id) {
+	public void setMovieId(String id) {
 		this.movieId = id;
 	}
 

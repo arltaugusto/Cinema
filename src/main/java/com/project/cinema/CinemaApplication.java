@@ -64,9 +64,7 @@ public class CinemaApplication {
 				new Movie("Star Wars", 180, "synopsis of star wars"),
 				new Movie("Harry Potter", 200,"synopsis of harry potter")
 			);
-			PlayPK playPk = new PlayPK(1, 1, LocalDateTime.of(2021, Month.AUGUST, 29, 19, 30));
 			movieRepository.saveAll(movies);
-			playRepository.save(new Play(playPk, playPk.getStartTime().plusMinutes(180), 60, movies.get(0), BasicEntityUtils.entityFinder(salaRepository.findById(1))));
 			userRepository.saveAll(users);
 		}};
 		

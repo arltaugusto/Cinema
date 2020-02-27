@@ -3,17 +3,15 @@ package com.project.cinema;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -52,13 +50,14 @@ public class MovieController {
 
 
 	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
-	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile")@Valid @NotNull @NotBlank MultipartFile imageFile) throws IOException {
+	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile") @Nullable MultipartFile imageFile) throws IOException {
 		MovieDTO movieDto = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
 		Movie movie = new Movie(movieDto.getName(), movieDto.getDuration(), movieDto.getSynopsis());
-		String path = String.format("%s/%s", BucketName.MOVIE_IMAGE.getBucketName(), movie.getMovieId());
-		movie.setImagePath(imageFile.getOriginalFilename());
-//		if(!imageFile.isEmpty())
-//			storageService.saveImage(imageFile, path);
+		if(imageFile != null) {
+			String path =  String.format("%s/%s", BucketName.MOVIE_IMAGE.getBucketName(), movie.getMovieId());
+			movie.setImagePath(imageFile.getOriginalFilename());
+			storageService.saveImage(imageFile, path);
+		}
 		return BasicEntityUtils.save(movie, movieRepository);
 	}
 	

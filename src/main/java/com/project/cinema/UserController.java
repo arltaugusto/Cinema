@@ -47,6 +47,8 @@ public class UserController {
 	private JwtUtils jwtTokenUtils;
 	@Autowired 
 	private UserRepository userRepository;
+	@Autowired
+	private BookController bookController;
 	
 	private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid Username or password";
 	
@@ -112,5 +114,13 @@ public class UserController {
 	public @ResponseBody User getUserFromJwt(@RequestHeader("Authorization") String jwt) throws EntityNotFoundException {
 		String userToken = jwt.split(StringUtils.SPACE)[1];
 		return BasicEntityUtils.entityFinder(userRepository.findByEmail(jwtTokenUtils.extractUsername(userToken)));
+	}
+	
+	@GetMapping(path="/logout") 
+	public @ResponseBody User logout(@RequestHeader("Authorization") String jwt) throws EntityNotFoundException {
+		String userToken = jwt.split(StringUtils.SPACE)[1];
+		User user = BasicEntityUtils.entityFinder(userRepository.findByEmail(jwtTokenUtils.extractUsername(userToken)));
+		bookController.removeTemporalSeat(user.getId())
+		
 	}
 }

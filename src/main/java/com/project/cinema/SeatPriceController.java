@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.project.entities.SeatPrice;
 import com.project.exceptions.EntityNotFoundException;
+import com.project.exceptions.PricesAlreadyActivatedException;
 import com.project.repositories.SeatPriceRepository;
 import com.project.requestobjects.PriceDTO;
 import com.project.utils.BasicEntityUtils;
@@ -33,6 +34,17 @@ public class SeatPriceController {
 		SeatPrice newSeatPrice = new SeatPrice(price.getActivationDate(), price.getSuperSeatPrice(), price.getRegularSeatPrice());
 		seatPriceRepository.save(newSeatPrice);
 		return new ResponseEntity<>("added", HttpStatus.OK);
+	}
+	
+	@PostMapping(path = "/delete", consumes = "application/json")
+	public void deletePrices (@RequestBody PriceDTO price) throws PricesAlreadyActivatedException {
+		checkSetDate(price);
+	}
+
+	private void checkSetDate(PriceDTO price) throws PricesAlreadyActivatedException {
+		if(price.getActivationDate().isBefore(LocalDateTime.now())) {
+			throw new PricesAlreadyActivatedException("These prices have already been activated and cannot be deleted.");
+		}
 	}
 	
 	@GetMapping(path="/getAll")

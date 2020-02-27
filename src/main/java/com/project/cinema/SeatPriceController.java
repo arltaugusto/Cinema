@@ -38,10 +38,10 @@ public class SeatPriceController {
 	
 	@PostMapping(path = "/delete", consumes = "application/json")
 	public void deletePrices (@RequestBody PriceDTO price) throws PricesAlreadyActivatedException {
-		checkSetDate(price);
+		checkActivationDate(price);
 	}
 
-	private void checkSetDate(PriceDTO price) throws PricesAlreadyActivatedException {
+	private void checkActivationDate(PriceDTO price) throws PricesAlreadyActivatedException {
 		if(price.getActivationDate().isBefore(LocalDateTime.now())) {
 			throw new PricesAlreadyActivatedException("These prices have already been activated and cannot be deleted.");
 		}

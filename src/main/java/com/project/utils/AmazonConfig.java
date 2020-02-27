@@ -26,18 +26,18 @@ public class AmazonConfig {
 				.build();
 	}
 	
-//    @Bean
-//    public BasicDataSource dataSource() throws URISyntaxException {
-//        String dbUrl = System.getenv("spring.datasource.url");
-//        String username = System.getenv("spring.datasource.username");
-//        String password = System.getenv("spring.datasource.password");
-//
-//        BasicDataSource basicDataSource = new BasicDataSource();
-//        basicDataSource.setUrl(dbUrl);
-//        basicDataSource.setUsername(username);
-//        basicDataSource.setPassword(password);
-//
-//        return basicDataSource;
-//    }
+    @Bean
+    public BasicDataSource dataSource() throws URISyntaxException {
+        String dbUrl = System.getenv("spring.datasource.url");
+        String username = System.getenv("spring.datasource.username");
+        String password = System.getenv("spring.datasource.password");
+
+        BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setUrl(dbUrl);
+        basicDataSource.setUsername(username);
+        basicDataSource.setPassword(password);
+
+        return basicDataSource;
+    }
 
 }

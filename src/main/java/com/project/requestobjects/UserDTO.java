@@ -11,6 +11,7 @@ public class UserDTO {
 	private String email;
 	private String name;
 	private String password;
+	private String newPassword;
 	
 	private List<Booking> books = new ArrayList<>();
 	
@@ -52,5 +53,13 @@ public class UserDTO {
 	
 	public void setBooks(List<Booking> books) {
 		this.books = books;
+	}
+
+	public String getNewPassword() {
+		return newPassword;
+	}
+
+	public void setNewPassword(String newPassword) {
+		this.newPassword = newPassword;
 	}
 }

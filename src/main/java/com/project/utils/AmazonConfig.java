@@ -1,5 +1,8 @@
 package com.project.utils;
 
+import java.net.URISyntaxException;
+
+import org.apache.commons.dbcp.BasicDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,5 +25,19 @@ public class AmazonConfig {
 				.withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
 				.build();
 	}
+	
+    @Bean
+    public BasicDataSource dataSource() throws URISyntaxException {
+        String dbUrl = System.getenv("spring.datasource.url");
+        String username = System.getenv("spring.datasource.username");
+        String password = System.getenv("spring.datasource.password");
+
+        BasicDataSource basicDataSource = new BasicDataSource();
+        basicDataSource.setUrl(dbUrl);
+        basicDataSource.setUsername(username);
+        basicDataSource.setPassword(password);
+
+        return basicDataSource;
+    }
 
 }

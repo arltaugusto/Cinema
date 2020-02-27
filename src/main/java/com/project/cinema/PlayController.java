@@ -56,7 +56,7 @@ public class PlayController {
 		Room sala = BasicEntityUtils.entityFinder(salaRepository.findById(playPk.getRoomId()));
 		LocalDateTime endTime = playPk.getStartTime().plusMinutes(movie.getDuration());
 		Play play = new Play(playPk, endTime, 60, movie, sala);
-		isSalaAvailable(play);
+		isRoomAvailable(play);
 		return BasicEntityUtils.save(play, playRepository);
 	}
 	
@@ -71,7 +71,7 @@ public class PlayController {
 	@PostMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deletePlay(@RequestBody PlayPK playPk) throws EntityNotFoundException {
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(playPk));
-		if(play.getPlayPK().getStartTime().compareTo(LocalDateTime.now()) > 0) {
+		if(play.getPlayPK().getStartTime().isAfter(LocalDateTime.now())) {
 			bookRepository.deleteAll(play.getBooks());
 		}
 		playRepository.delete(play);
@@ -79,7 +79,7 @@ public class PlayController {
 	}
 	
 	//TODO test
-	private void isSalaAvailable(Play play) throws NoTimeAvailableException {
+	private void isRoomAvailable(Play play) throws NoTimeAvailableException {
 		LocalDateTime newStartTime = play.getPlayPK().getStartTime();
 		LocalDateTime newEndTime = play.getEndTime();
 		List<Play> plays = playRepository.findAll();

@@ -76,7 +76,7 @@ public class BookController {
 	}
 
 	@PostMapping(path = "/removeTemporalSeat")
-	public @ResponseBody ResponseEntity<String> removeTemporalSeat(@RequestBody SeatRequest seatRequest) throws EntityNotFoundException, SessionTimeOutException {
+	public @ResponseBody ResponseEntity<Seat> removeTemporalSeat(@RequestBody SeatRequest seatRequest) throws EntityNotFoundException, SessionTimeOutException {
 		String userId = seatRequest.getUserId();
 		TemporalSeats temporalSeats = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
 		checkSessionStatus(userId, temporalSeats);
@@ -88,9 +88,9 @@ public class BookController {
 			play.setAvailableSeats(play.getAvailableSeats() + 1);
 			temporalBookingsRepository.removeSeat(userId, seat);
 			playRepository.save(play);
-			return new ResponseEntity<>("{\"message\": \"removed\"}", HttpStatus.OK);
+			return new ResponseEntity<>(seat, HttpStatus.OK);
 		}
-		return new ResponseEntity<>("{\"message\": \"You didn't booked this seat\"}", HttpStatus.BAD_REQUEST);
+		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")

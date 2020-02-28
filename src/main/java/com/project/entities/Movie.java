@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -25,19 +24,29 @@ public class Movie {
 	private long duration;
 	private String imagePath;
 	private String synopsis;
+	private boolean isActive;
 	
 	
-	@OneToMany(mappedBy = "movie", cascade=CascadeType.DETACH)
+	@OneToMany(mappedBy = "movie")
 	@JsonIgnore
 	private List<Play> plays = new ArrayList<>();
 	
 	public Movie() {}
 
-	public Movie( String name, long duration, String synopsis) {
+	public Movie( String name, long duration, String synopsis, boolean isActive) {
 		this.movieId = UUID.randomUUID().toString().replace("-", StringUtils.EMPTY); 
 		this.name = name;
 		this.duration = duration;
 		this.synopsis = synopsis;
+		this.isActive = isActive;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 
 	public String getImagePath() {
@@ -87,7 +96,4 @@ public class Movie {
 	public void setDuration(long duration) {
 		this.duration = duration;
 	}
-	
-	
-
 }

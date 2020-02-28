@@ -14,8 +14,7 @@ public class IdGenerator implements IdentifierGenerator {
 	public static final String generatorName = "IdGenerator";
 
 	@Override
-	public Serializable generate(SharedSessionContractImplementor sharedSessionContractImplementor, Object object)
-			throws HibernateException {
+	public Serializable generate(SharedSessionContractImplementor sharedSessionContractImplementor, Object object) {
 		return UUID.randomUUID().toString().replace("-", StringUtils.EMPTY);
 	}
 }

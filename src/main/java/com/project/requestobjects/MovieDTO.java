@@ -3,20 +3,15 @@ package com.project.requestobjects;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import com.project.entities.Play;
 
 public class MovieDTO {
 
 	private String id;
-	
 	private String name;
 	private long duration;
 	private String synopsis;
 	private String imagePath;
-	
-	
 	private List<Play> plays = new ArrayList<>();
 	
 	public MovieDTO() {}

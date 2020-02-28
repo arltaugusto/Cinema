@@ -27,6 +27,7 @@ import com.project.entities.SeatPK;
 import com.project.entities.SeatPrice;
 import com.project.entities.User;
 import com.project.exceptions.EntityNotFoundException;
+import com.project.exceptions.NoSeatBookedException;
 import com.project.exceptions.SeatAlreadyBookedException;
 import com.project.exceptions.SessionTimeOutException;
 import com.project.repositories.BookRepository;
@@ -68,7 +69,7 @@ public class BookController {
 		} else {
 			List<Seat> userSeatList = new ArrayList<>();
 			userSeatList.add(seat);
-			temporalBookingsRepository.put(userId, new TemporalSeats(userSeatList, userId, seatRequest.getPlayPk(), LocalDateTime.now()));
+			temporalBookingsRepository.put(userId, new TemporalSeats(userSeatList, seatRequest.getPlayPk(), LocalDateTime.now()));
 		}
 		play.setAvailableSeats(play.getAvailableSeats() - 1);
 		playRepository.save(play);
@@ -94,12 +95,15 @@ public class BookController {
 	}
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
-	public @ResponseBody ResponseEntity<Booking> addNewBook (@RequestBody BookRequestDTO bookRequest) throws EntityNotFoundException {
+	public @ResponseBody ResponseEntity<Booking> addNewBook (@RequestBody BookRequestDTO bookRequest) throws EntityNotFoundException, NoSeatBookedException {
 		String userId = bookRequest.getUserId();
 		User user = BasicEntityUtils.entityFinder(userRepository.findById(userId));
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(bookRequest.getPlayPk()));
 		TemporalSeats temporalSeatsByUserId = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
 		List<Seat> seats = temporalSeatsByUserId.getSeats();
+		if(seats.isEmpty()) {
+			throw new NoSeatBookedException();
+		}
 		SeatPrice lastSeatPrice = BasicEntityUtils.entityFinder(seatPriceRepository.findAll().stream()
 				.filter(seatPrice -> seatPrice.getActivationDate().compareTo(LocalDateTime.now()) < 0)
 				.max(Comparator.comparing(SeatPrice::getActivationDate).thenComparing(SeatPrice::getSetDate)));

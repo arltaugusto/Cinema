@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -38,21 +37,16 @@ import com.project.utils.StorageService;
 @CrossOrigin
 @RequestMapping(path="/movies") 
 public class MovieController {
-	@Autowired
-	private MovieRepository movieRepository;
-	@Autowired
-	private BookRepository bookRepository;
-	@Autowired
-	private PlayRepository playRepository;
-	@Autowired
-	private Environment environment;
+	
+	@Autowired private MovieRepository movieRepository;
+	@Autowired private BookRepository bookRepository;
+	@Autowired private PlayRepository playRepository;
 	@Autowired StorageService storageService;
-
 
 	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile") @Nullable MultipartFile imageFile) throws IOException {
 		MovieDTO movieDto = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
-		Movie movie = new Movie(movieDto.getName(), movieDto.getDuration(), movieDto.getSynopsis());
+		Movie movie = new Movie(movieDto.getName(), movieDto.getDuration(), movieDto.getSynopsis(), true);
 		if(imageFile != null) {
 			String path =  String.format("%s/%s", BucketName.MOVIE_IMAGE.getBucketName(), movie.getMovieId());
 			movie.setImagePath(imageFile.getOriginalFilename());
@@ -80,13 +74,16 @@ public class MovieController {
 			.map(Play::getBooks)
 			.forEach(bookRepository::deleteAll);
 		playRepository.deleteAll(plays);
-		movieRepository.delete(movie);
+		movie.setActive(false);
+		movieRepository.save(movie);
 		return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}
 	
 	@GetMapping(path="/all")
 	public @ResponseBody Iterable<Movie> getAllUsers() {
-		return movieRepository.findAll();
+		return movieRepository.findAll().stream()
+			.filter(movie -> movie.isActive())
+			.collect(Collectors.toList());
 	}
 	
 	@PostMapping(path="/getMoviePlays", consumes = "application/json")

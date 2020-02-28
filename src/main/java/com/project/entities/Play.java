@@ -12,8 +12,6 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 @Entity
 @Table(name = "plays")
 public class Play {
@@ -36,14 +34,18 @@ public class Play {
 
 	@OneToMany(mappedBy = "play")
 	private List<Booking> books = new ArrayList<>();
+	
+	private boolean isActive;
+	
 	public Play() {}
 	
-	public Play(PlayPK playPK, LocalDateTime endTime, int availableSeats, Movie movie, Room room) {
+	public Play(PlayPK playPK, LocalDateTime endTime, int availableSeats, Movie movie, Room room, boolean isActive) {
 		this.playPK = playPK;
 		this.endTime = endTime;
 		this.availableSeats = availableSeats;
 		this.movie = movie;
 		this.room = room;
+		this.isActive = isActive;
 	}
 
 	public LocalDateTime getEndTime() {
@@ -92,5 +94,13 @@ public class Play {
 
 	public void setBooks(List<Booking> books) {
 		this.books = books;
+	}
+
+	public boolean isActive() {
+		return isActive;
+	}
+
+	public void setActive(boolean isActive) {
+		this.isActive = isActive;
 	}
 }

@@ -10,16 +10,14 @@ import com.project.utils.SeatManager;
 public class TemporalSeats implements SeatManager {
 	
 	private List<Seat> seats;
-	private String userId;
 	private PlayPK playPk;
 	private LocalDateTime initTime;
 	private boolean isOpen;
 	
 	public TemporalSeats() {}
 
-	public TemporalSeats(List<Seat> seat, String userId, PlayPK play, LocalDateTime initTime) {
+	public TemporalSeats(List<Seat> seat, PlayPK play, LocalDateTime initTime) {
 		this.seats = seat;
-		this.userId = userId;
 		this.playPk = play;
 		this.initTime = initTime;
 		this.isOpen = true;

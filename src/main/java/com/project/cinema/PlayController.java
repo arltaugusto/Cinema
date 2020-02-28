@@ -57,7 +57,7 @@ public class PlayController {
 		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(playPk.getMovieId()));
 		Room sala = BasicEntityUtils.entityFinder(salaRepository.findById(playPk.getRoomId()));
 		LocalDateTime endTime = playPk.getStartTime().plusMinutes(movie.getDuration());
-		Play play = new Play(playPk, endTime, 60, movie, sala);
+		Play play = new Play(playPk, endTime, 60, movie, sala, true);
 		isRoomAvailable(play);
 		return BasicEntityUtils.save(play, playRepository);
 	}
@@ -72,8 +72,11 @@ public class PlayController {
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(playPk));
 		if(play.getPlayPK().getStartTime().isAfter(LocalDateTime.now())) {
 			bookRepository.deleteAll(play.getBooks());
+			playRepository.delete(play);
+		} else {
+			play.setActive(false);
+			playRepository.save(play);
 		}
-		playRepository.delete(play);
 		return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}
 	

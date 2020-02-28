@@ -49,7 +49,6 @@ public class SeatPriceController {
 	 		}
 	 	}
 	
-	
 	@GetMapping(path="/getAll")
 	public ResponseEntity<List<SeatPrice>> getPrices () {
 		return new ResponseEntity<>(seatPriceRepository.findAll(), HttpStatus.OK);

@@ -39,16 +39,10 @@ import com.project.utils.BasicEntityUtils;
 @RequestMapping(path="/user") 
 public class UserController {
 	
-	@Autowired
-	private AuthenticationManager authenticationManager;
-	@Autowired
-	private MyUserDetailsService userDetailsService;
-	@Autowired
-	private JwtUtils jwtTokenUtils;
-	@Autowired 
-	private UserRepository userRepository;
-	@Autowired
-	private BookController bookController;
+	@Autowired private AuthenticationManager authenticationManager;
+	@Autowired private MyUserDetailsService userDetailsService;
+	@Autowired private JwtUtils jwtTokenUtils;
+	@Autowired private UserRepository userRepository;
 	
 	private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid Username or password";
 	
@@ -93,7 +87,7 @@ public class UserController {
 				new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword())
 				);
 		} catch(BadCredentialsException e) {
-			throw e;
+			throw new IllegalStateException("Bad username or password", e);
 		}
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
 		final String jwt = jwtTokenUtils.generateToken(userDetails);
@@ -103,11 +97,6 @@ public class UserController {
 	@GetMapping(path="/all")
 	public @ResponseBody Iterable<User> getAllUsers() {
 		return userRepository.findAll();
-	}
-	
-	@GetMapping(path="/{id}")
-	public @ResponseBody User getUserData(@PathVariable("id") String id) {
-		return userRepository.findById(id).get();
 	}
 	
 	@GetMapping(path="/getUser") 

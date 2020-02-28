@@ -3,7 +3,6 @@ package com.project.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import com.project.entities.Seat;

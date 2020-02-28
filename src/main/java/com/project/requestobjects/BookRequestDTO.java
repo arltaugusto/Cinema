@@ -1,8 +1,5 @@
 package com.project.requestobjects;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.project.entities.PlayPK;
 
 public class BookRequestDTO {

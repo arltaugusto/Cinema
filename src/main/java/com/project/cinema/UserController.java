@@ -116,11 +116,5 @@ public class UserController {
 		return BasicEntityUtils.entityFinder(userRepository.findByEmail(jwtTokenUtils.extractUsername(userToken)));
 	}
 	
-	@GetMapping(path="/logout") 
-	public @ResponseBody User logout(@RequestHeader("Authorization") String jwt) throws EntityNotFoundException {
-		String userToken = jwt.split(StringUtils.SPACE)[1];
-		User user = BasicEntityUtils.entityFinder(userRepository.findByEmail(jwtTokenUtils.extractUsername(userToken)));
-		bookController.removeTemporalSeat(user.getId())
-		
-	}
+
 }

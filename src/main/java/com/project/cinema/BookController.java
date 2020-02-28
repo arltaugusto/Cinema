@@ -91,7 +91,6 @@ public class BookController {
 			return new ResponseEntity<>("{\"message\": \"removed\"}", HttpStatus.OK);
 		}
 		return new ResponseEntity<>("{\"message\": \"You didn't booked this seat\"}", HttpStatus.BAD_REQUEST);
-
 	}
 	
 	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")

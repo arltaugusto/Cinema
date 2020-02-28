@@ -70,7 +70,6 @@ public class MovieController {
 		return BasicEntityUtils.save(mov, movieRepository);
 	}
 	
-	//TODO test
 	@PostMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteMovie(@RequestBody MovieDTO movieRequest) throws EntityNotFoundException {
 		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(movieRequest.getId()));
@@ -92,7 +91,10 @@ public class MovieController {
 	
 	@PostMapping(path="/getMoviePlays", consumes = "application/json")
 	public @ResponseBody List<Play> getMoviePlays(@RequestBody MovieDTO movie) throws EntityNotFoundException {
-		return BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId())).getPlays();
+		return BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId())).getPlays()
+			.stream()
+			.filter(play -> play.getPlayPK().getStartTime().plusMinutes(10).isAfter(LocalDateTime.now()))
+			.collect(Collectors.toList());
 	}
 //
 //	@GetMapping(path = "image/download/{id}")

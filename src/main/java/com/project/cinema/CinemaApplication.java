@@ -1,35 +1,12 @@
 package com.project.cinema;
 
-import java.time.LocalDateTime;
-import java.time.Month;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import com.project.entities.Movie;
-import com.project.entities.Play;
-import com.project.entities.PlayPK;
-import com.project.entities.Room;
-import com.project.entities.Seat;
-import com.project.entities.SeatPK;
-import com.project.entities.User;
-import com.project.repositories.MovieRepository;
-import com.project.repositories.PlayRepository;
-import com.project.repositories.SalaRepository;
-import com.project.repositories.SeatRepository;
-import com.project.repositories.UserRepository;
-import com.project.utils.BasicEntityUtils;
 
 @SpringBootApplication
 @ComponentScan({"com.project.cinema","com.project.requestobjects","com.project.exceptions", "com.project.utils", "com.project.security"})
@@ -39,43 +16,7 @@ import com.project.utils.BasicEntityUtils;
 @EnableCaching
 public class CinemaApplication {
 	
-	private boolean init = true;
-	
 	public static void main(String[] args) { 
 		SpringApplication.run(CinemaApplication.class, args);
-	}
-	
-	@Bean
-	public CommandLineRunner initializer(UserRepository userRepository, SalaRepository salaRepository, SeatRepository seatRepository, MovieRepository movieRepository, PlayRepository playRepository) {
-		return args -> {
-			if(init) {
-			for (int i = 1; i <= 10; i++) {
-				Room room = new Room();
-				salaRepository.save(room);
-				seatRepository.saveAll(createRoomSeats(room));
-			}
-			BCryptPasswordEncoder encoder =new BCryptPasswordEncoder();
-			String password = encoder.encode("holahola");
-			List<User> users = Arrays.asList(
-				new User("admin@gmail.com", "Admin", "ROLE_ADMIN", password),
-				new User("user@gmail.com", "User", "ROLE_USER", password)
-			);
-			List<Movie> movies = Arrays.asList(
-				new Movie("Star Wars", 180, "synopsis of star wars"),
-				new Movie("Harry Potter", 200,"synopsis of harry potter")
-			);
-			movieRepository.saveAll(movies);
-			userRepository.saveAll(users);
-		}};
-		
-	}
-
-	private List<Seat> createRoomSeats(Room room) {
-		List<Seat> seats = new ArrayList<>();
-		for(int i = 1; i <= 60; i++) {
-	
-			seats.add(new Seat(new SeatPK(room.getId(), i), room,false));
-		}
-		return seats;
 	}
 }

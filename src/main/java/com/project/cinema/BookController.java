@@ -63,10 +63,7 @@ public class BookController {
 		checkSeatAvailability(seat, play);
 		if (temporalBookingsRepository.getTemporalSeatsList().containsKey(userId) && temporalBookingsRepository.getTemporalSeatsByUserId(userId).getPlayPk().equals(seatRequest.getPlayPk())) {
 			TemporalSeats temporalSeat = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
-			if(!temporalSeat.isOpen()) {
-				temporalBookingsRepository.remove(userId);
-				throw new SessionTimeOutException("Booking session expired");
-			}
+			checkSessionStatus(userId, temporalSeat);
 			temporalSeat.addSeat(seat);
 		} else {
 			List<Seat> userSeatList = new ArrayList<>();
@@ -77,16 +74,19 @@ public class BookController {
 		playRepository.save(play);
 		return new ResponseEntity<>(seat, HttpStatus.OK); 
 	}
-	
+
 	@PostMapping(path = "/removeTemporalSeat")
-	public @ResponseBody ResponseEntity<String> removeTemporalSeat(@RequestBody SeatRequest seatRequest) throws EntityNotFoundException {
+	public @ResponseBody ResponseEntity<String> removeTemporalSeat(@RequestBody SeatRequest seatRequest) throws EntityNotFoundException, SessionTimeOutException {
+		String userId = seatRequest.getUserId();
+		TemporalSeats temporalSeats = temporalBookingsRepository.getTemporalSeatsByUserId(userId);
+		checkSessionStatus(userId, temporalSeats);
 		SeatPK seatPk = new SeatPK(seatRequest.getRoomId(), seatRequest.getSeatId());
 		Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(seatRequest.getPlayPk()));
-		List<Seat> seats = temporalBookingsRepository.getTemporalSeatsByUserId(seatRequest.getUserId()).getSeats();
+		List<Seat> seats = temporalSeats.getSeats();
 		if(seats.contains(seat)) {
 			play.setAvailableSeats(play.getAvailableSeats() + 1);
-			temporalBookingsRepository.removeSeat(seatRequest.getUserId(), seat);
+			temporalBookingsRepository.removeSeat(userId, seat);
 			playRepository.save(play);
 			return new ResponseEntity<>("{\"message\": \"removed\"}", HttpStatus.OK);
 		}
@@ -144,6 +144,13 @@ public class BookController {
 			if(seatsAlreadyBooked.contains(seat)) {
 				throw new SeatAlreadyBookedException(Arrays.asList(seat));
 			}
+		}
+	}
+	
+	private void checkSessionStatus(String userId, TemporalSeats temporalSeat) throws SessionTimeOutException {
+		if(!temporalSeat.isOpen()) {
+			temporalBookingsRepository.remove(userId);
+			throw new SessionTimeOutException("Booking session expired");
 		}
 	}
 }

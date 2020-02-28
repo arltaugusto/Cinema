@@ -4,17 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.GenericGenerator;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.utils.IdGenerator;
 
 @Entity
 @Table(name = "movies")
@@ -29,7 +27,7 @@ public class Movie {
 	private String synopsis;
 	
 	
-	@OneToMany(mappedBy = "movie")
+	@OneToMany(mappedBy = "movie", cascade=CascadeType.DETACH)
 	@JsonIgnore
 	private List<Play> plays = new ArrayList<>();
 	

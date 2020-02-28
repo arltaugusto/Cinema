@@ -33,19 +33,22 @@ public class SeatPriceController {
 	public ResponseEntity<String> addNewPrice (@RequestBody PriceDTO price) {
 		SeatPrice newSeatPrice = new SeatPrice(price.getActivationDate(), price.getSuperSeatPrice(), price.getRegularSeatPrice());
 		seatPriceRepository.save(newSeatPrice);
-		return new ResponseEntity<>("added", HttpStatus.OK);
+		return new ResponseEntity<>("{\"message\": \"added\"}", HttpStatus.OK);
 	}
+	@PostMapping(path = "/delete", consumes = "application/json") 
+		public ResponseEntity<String> deletePrices (@RequestBody PriceDTO price) throws PricesAlreadyActivatedException, EntityNotFoundException {
+			SeatPrice pri = BasicEntityUtils.entityFinder(seatPriceRepository.findById(price.getSetDate())); 
+			checkActivationDate(pri);
+			seatPriceRepository.delete(pri);
+			return new ResponseEntity<>("{\"message\": \"deleted\"}", HttpStatus.OK);
+	 	}
 	
-	@PostMapping(path = "/delete", consumes = "application/json")
-	public void deletePrices (@RequestBody PriceDTO price) throws PricesAlreadyActivatedException {
-		checkSetDate(price);
-	}
-
-	private void checkSetDate(PriceDTO price) throws PricesAlreadyActivatedException {
-		if(price.getActivationDate().isBefore(LocalDateTime.now())) {
-			throw new PricesAlreadyActivatedException("These prices have already been activated and cannot be deleted.");
-		}
-	}
+		private void checkActivationDate(SeatPrice price) throws PricesAlreadyActivatedException {
+	 		if(price.getActivationDate().isBefore(LocalDateTime.now())) {
+	 			throw new PricesAlreadyActivatedException("These prices have already been activated and cannot be deleted.");
+	 		}
+	 	}
+	
 	
 	@GetMapping(path="/getAll")
 	public ResponseEntity<List<SeatPrice>> getPrices () {

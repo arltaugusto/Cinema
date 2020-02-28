@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -98,7 +99,7 @@ public class PlayController {
 	
 	@PostMapping(path = "/getPlayBookedSeats")
 	public @ResponseBody List<Seat> getPlayBookedSeats(@RequestBody PlayPK id, @RequestHeader("Authorization") String auth) throws EntityNotFoundException {
-		User user = BasicEntityUtils.entityFinder(userRepository.findByEmail(jwtUtils.extractUsername(auth)));
+		User user = BasicEntityUtils.entityFinder(userRepository.findByEmail(jwtUtils.extractUsername( auth.split(StringUtils.SPACE)[1])));
 		if(temporalBookingsRepository.getTemporalSeatsList().containsKey(user.getId()))
 			temporalBookingsRepository.remove(user.getId());
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(id));

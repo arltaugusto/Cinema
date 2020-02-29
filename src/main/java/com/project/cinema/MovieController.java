@@ -86,6 +86,7 @@ public class MovieController {
 		playRepository.deleteAll(plays);
 		movie.setActive(false);
 		movieRepository.save(movie);
+		movieRepository.delete(movie);
 		return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}
 	

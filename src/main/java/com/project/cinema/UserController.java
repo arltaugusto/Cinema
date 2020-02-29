@@ -46,7 +46,7 @@ public class UserController {
 	
 	private static final String INVALID_CREDENTIALS_MESSAGE = "Invalid Username or password";
 	
-	@PostMapping(path="/add", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
+	@PostMapping(path="/add", consumes = "application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<User> addNewUser (@RequestBody UserDTO user) throws EmailUnavailableException {
 		String email = user.getEmail();
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(); 
@@ -62,7 +62,7 @@ public class UserController {
 		}
 	}
 
-	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
+	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<User> modifyUser (@RequestBody UserDTO user) throws EmailUnavailableException, EntityNotFoundException, InvalidCredentialsException {
 		String newEmail = user.getEmail();
 		User userDb = BasicEntityUtils.entityFinder(userRepository.findById(user.getUserId()));
@@ -80,7 +80,7 @@ public class UserController {
 		}
 	}
 	
-	@PostMapping(path="/login", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
+	@PostMapping(path="/login", consumes = "application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<AuthenticationResponse> login (@RequestBody AuthenticationRequest authenticationRequest) throws InvalidCredentialsException {
 		try {
 		authenticationManager.authenticate(

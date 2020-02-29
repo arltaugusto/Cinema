@@ -27,7 +27,7 @@ public class AppSecurityConfig extends WebSecurityConfigurerAdapter {
 		http
 			.authorizeRequests()
 				.antMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-				.antMatchers("/movies/all", "user/add", "user/login", "movies/image/download/{\\d+}").permitAll()
+				.antMatchers("/movies/all", "user/add", "user/login", "movies/image/download/*").permitAll()
 				.antMatchers("/books/*", "/movies/{\\d+}", "/plays/getPlay", "/plays/getPlayBookedSeats", "users/modify", "user/getUser", "movie/plays/{\\d+}","/price/getCurrentPrices","/price/getAll").hasAnyRole("USER", "ADMIN")
 				.antMatchers("/movies/add", "/movies/delete", "/movies/modify", "/plays/add", "/plays/delete", "/plays/all","/price/add").hasRole("ADMIN")
 			.and()

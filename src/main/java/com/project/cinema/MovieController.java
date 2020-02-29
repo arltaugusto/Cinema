@@ -46,7 +46,7 @@ public class MovieController {
 	@Autowired private PlayRepository playRepository;
 	@Autowired StorageService storageService;
 
-	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
+	@PostMapping(path="/add", consumes = {"multipart/form-data"})
 	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile") @Nullable MultipartFile imageFile) throws IOException {
 		MovieDTO movieDto = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
 		validateEmptyInformation(movieDto);
@@ -65,7 +65,7 @@ public class MovieController {
 		}
 	}
 
-	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
+	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json")
 	public @ResponseBody ResponseEntity<Movie> modifyMovie (@RequestBody MovieDTO movie) throws EntityNotFoundException {
 		Movie mov = BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId()));
 		mov.setDuration(movie.getDuration());

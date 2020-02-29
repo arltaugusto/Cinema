@@ -16,6 +16,7 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -57,7 +58,7 @@ public class MovieController {
 		}
 		return BasicEntityUtils.save(movie, movieRepository);
 	}
-	
+
 	private void validateEmptyInformation(MovieDTO movieDto) {
 		if(StringUtils.isBlank(movieDto.getName()) || !NumberUtils.isParsable(String.valueOf(movieDto.getDuration()))) {
 			throw new IllegalStateException("Incomplete Data");
@@ -102,10 +103,10 @@ public class MovieController {
 			.filter(play -> play.getPlayPK().getStartTime().plusMinutes(10).isAfter(LocalDateTime.now()) && play.isActive())
 			.collect(Collectors.toList());
 	}
-//
-//	@GetMapping(path = "image/download/{id}")
-//	public byte[] getMovieImage(@PathVariable("id") String id) throws NumberFormatException, EntityNotFoundException {
-//		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(Integer.parseInt(id)));
-//		return storageService.downloadImage(movie);
-//	}
+
+	@GetMapping(path = "image/download/{id}")
+	public byte[] getMovieImage(@PathVariable("id") String id) throws EntityNotFoundException {
+		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(id));
+		return storageService.downloadImage(movie);
+	}
 }

@@ -105,8 +105,8 @@ public class MovieController {
 	}
 
 	@GetMapping(path = "image/download/{id}")
-	public byte[] getMovieImage(@PathVariable("id") String id) throws EntityNotFoundException {
+	public ResponseEntity<byte[]> getMovieImage(@PathVariable("id") String id) throws EntityNotFoundException {
 		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(id));
-		return storageService.downloadImage(movie);
+		return new ResponseEntity<>(storageService.downloadImage(movie), HttpStatus.OK);
 	}
 }

@@ -111,7 +111,6 @@ public class BookController {
 			.mapToDouble(seat -> seat.isSuperSeat() ? lastSeatPrice.getSuperSeatPrice() : lastSeatPrice.getRegularSeatPrice())
 			.sum();
 		Booking booking = new Booking(user, play, seats, total);
-		play.setAvailableSeats(play.getAvailableSeats() - seats.size());
 		temporalBookingsRepository.remove(userId);
 		bookRepository.save(booking);
 		playRepository.save(play);

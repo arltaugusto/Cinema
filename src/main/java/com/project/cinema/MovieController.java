@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +48,7 @@ public class MovieController {
 	@PostMapping(path="/add", consumes = {"multipart/form-data"}) // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<Movie> addNewMovie (@RequestPart("movie") @Valid String movieStr, @RequestPart("imageFile") @Nullable MultipartFile imageFile) throws IOException {
 		MovieDTO movieDto = BasicEntityUtils.convertToEntityFromString(MovieDTO.class, movieStr);
+		validateEmptyInformation(movieDto);
 		Movie movie = new Movie(movieDto.getName(), movieDto.getDuration(), movieDto.getSynopsis(), true);
 		if(imageFile != null) {
 			String path =  String.format("%s/%s", BucketName.MOVIE_IMAGE.getBucketName(), movie.getMovieId());
@@ -55,6 +58,12 @@ public class MovieController {
 		return BasicEntityUtils.save(movie, movieRepository);
 	}
 	
+	private void validateEmptyInformation(MovieDTO movieDto) {
+		if(StringUtils.isBlank(movieDto.getName()) || !NumberUtils.isParsable(String.valueOf(movieDto.getDuration()))) {
+			throw new IllegalStateException("Incomplete Data");
+		}
+	}
+
 	@PutMapping(path="/modify", consumes = "application/json", produces = "application/json") // Map ONLY POST Requests
 	public @ResponseBody ResponseEntity<Movie> modifyMovie (@RequestBody MovieDTO movie) throws EntityNotFoundException {
 		Movie mov = BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId()));
@@ -82,7 +91,7 @@ public class MovieController {
 	@GetMapping(path="/all")
 	public @ResponseBody Iterable<Movie> getAllUsers() {
 		return movieRepository.findAll().stream()
-			.filter(movie -> movie.isActive())
+			.filter(Movie::isActive)
 			.collect(Collectors.toList());
 	}
 	
@@ -90,7 +99,7 @@ public class MovieController {
 	public @ResponseBody List<Play> getMoviePlays(@RequestBody MovieDTO movie) throws EntityNotFoundException {
 		return BasicEntityUtils.entityFinder(movieRepository.findById(movie.getId())).getPlays()
 			.stream()
-			.filter(play -> play.getPlayPK().getStartTime().plusMinutes(10).isAfter(LocalDateTime.now()))
+			.filter(play -> play.getPlayPK().getStartTime().plusMinutes(10).isAfter(LocalDateTime.now()) && play.isActive())
 			.collect(Collectors.toList());
 	}
 //

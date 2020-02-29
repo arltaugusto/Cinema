@@ -64,7 +64,10 @@ public class PlayController {
 	
 	@GetMapping(path="/all", produces = "application/json")
 	public @ResponseBody ResponseEntity<List<Play>> getPlays () {
-		return new ResponseEntity<>(playRepository.findAll(), HttpStatus.OK);
+		return new ResponseEntity<>(playRepository.findAll().stream()
+				.filter(Play::isActive)
+				.collect(Collectors.toList()),
+				HttpStatus.OK);
 	}
 	
 	@PostMapping(path = "/delete")

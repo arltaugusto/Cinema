@@ -7,17 +7,17 @@ import org.springframework.stereotype.Component;
 
 import com.project.entities.Seat;
 import com.project.repositories.TemporalBookingsRepository;
-import com.project.requestobjects.TemporalSeats;
+import com.project.requestobjects.TemporalBooking;
 
 @Component
 public class CachedBookings implements TemporalBookingsRepository {
 	
-	private static Map<String, TemporalSeats> temporalSeatsList = new HashMap<>();
+	private static Map<String, TemporalBooking> temporalSeatsList = new HashMap<>();
 
 	public CachedBookings() {}
 	
 	@Override
-	public TemporalSeats getTemporalSeatsByUserId(String userId) {
+	public TemporalBooking getTemporalBookingByUserId(String userId) {
 		return temporalSeatsList.get(userId);
 	}
 
@@ -27,18 +27,18 @@ public class CachedBookings implements TemporalBookingsRepository {
 	}
 
 	@Override
-	public void put(String userId, TemporalSeats temporalSeats) {
-		temporalSeatsList.put(userId, temporalSeats);
+	public void put(String userId, TemporalBooking temporalBooking) {
+		temporalSeatsList.put(userId, temporalBooking);
 	}
 	
 	@Override
-	public Map<String, TemporalSeats> getTemporalSeatsList() {
+	public Map<String, TemporalBooking> getTemporalBookingList() {
 		return temporalSeatsList;
 	}
 
 	@Override
 	public void removeSeat(String userId, Seat seat) {
-		getTemporalSeatsByUserId(userId).removeSeat(seat); 
+		getTemporalBookingByUserId(userId).removeSeat(seat); 
 	}
 
 }

@@ -7,16 +7,16 @@ import com.project.entities.PlayPK;
 import com.project.entities.Seat;
 import com.project.utils.SeatManager;
 
-public class TemporalSeats implements SeatManager {
+public class TemporalBooking implements SeatManager {
 	
 	private List<Seat> seats;
 	private PlayPK playPk;
 	private LocalDateTime initTime;
 	private boolean isOpen;
 	
-	public TemporalSeats() {}
+	public TemporalBooking() {}
 
-	public TemporalSeats(List<Seat> seat, PlayPK play, LocalDateTime initTime) {
+	public TemporalBooking(List<Seat> seat, PlayPK play, LocalDateTime initTime) {
 		this.seats = seat;
 		this.playPk = play;
 		this.initTime = initTime;

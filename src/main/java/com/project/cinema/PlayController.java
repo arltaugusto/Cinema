@@ -35,7 +35,7 @@ import com.project.repositories.PlayRepository;
 import com.project.repositories.SalaRepository;
 import com.project.repositories.TemporalBookingsRepository;
 import com.project.repositories.UserRepository;
-import com.project.requestobjects.TemporalSeats;
+import com.project.requestobjects.TemporalBooking;
 import com.project.security.JwtUtils;
 import com.project.utils.BasicEntityUtils;
 
@@ -106,7 +106,7 @@ public class PlayController {
 	@PostMapping(path = "/getPlayBookedSeats")
 	public @ResponseBody List<Seat> getPlayBookedSeats(@RequestBody PlayPK id, @RequestHeader("Authorization") String auth) throws EntityNotFoundException {
 		User user = BasicEntityUtils.entityFinder(userRepository.findByEmail(jwtUtils.extractUsername(auth.split(StringUtils.SPACE)[1])));
-		if(temporalBookingsRepository.getTemporalSeatsList().containsKey(user.getId()))
+		if(temporalBookingsRepository.getTemporalBookingList().containsKey(user.getId()))
 			temporalBookingsRepository.remove(user.getId());
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(id));
 		List<Seat> totalBookedSeats = new ArrayList<>();
@@ -114,11 +114,11 @@ public class PlayController {
 			.map(Booking::getSeats)
 			.flatMap(Collection::stream)
 			.collect(Collectors.toList());
-		List<Seat> temporaryBookedSeats = temporalBookingsRepository.getTemporalSeatsList().entrySet()
+		List<Seat> temporaryBookedSeats = temporalBookingsRepository.getTemporalBookingList().entrySet()
 			.stream()
 			.map(Map.Entry::getValue)
 			.filter(temporalSeats -> temporalSeats.getPlayPk().equals(id) )
-			.map(TemporalSeats::getSeats)
+			.map(TemporalBooking::getSeats)
 			.flatMap(Collection::stream)
 			.collect(Collectors.toList());
 		totalBookedSeats.addAll(alradyBookedSeats);

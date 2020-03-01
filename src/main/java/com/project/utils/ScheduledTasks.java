@@ -2,6 +2,7 @@ package com.project.utils;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
@@ -14,7 +15,7 @@ import com.project.entities.Play;
 import com.project.exceptions.EntityNotFoundException;
 import com.project.repositories.PlayRepository;
 import com.project.repositories.TemporalBookingsRepository;
-import com.project.requestobjects.TemporalSeats;
+import com.project.requestobjects.TemporalBooking;
 
 @Component
 public class ScheduledTasks {
@@ -26,12 +27,12 @@ public class ScheduledTasks {
 	
 	@Scheduled(fixedRate = 30000)
 	public void cleanIncompleteBookings() {
-		Map<String, TemporalSeats> cachedBookings = temporalBookingsRepository.getTemporalSeatsList();
+		Map<String, TemporalBooking> cachedBookings = temporalBookingsRepository.getTemporalBookingList();
 		if(MapUtils.isNotEmpty(cachedBookings)) {
 			cachedBookings.entrySet().stream()
-			.filter(map -> map.getValue().getInitTime().plusMinutes(5).isBefore(LocalDateTime.now()) && map.getValue().isOpen())
+			.filter(map -> timeFilter(map, 5) && map.getValue().isOpen())
 			.forEach(map -> {
-				TemporalSeats temporalSeats =  map.getValue();
+				TemporalBooking temporalSeats =  map.getValue();
 				try {
 					Play play = BasicEntityUtils.entityFinder(playRepository.findById(temporalSeats.getPlayPk()));
 					play.setAvailableSeats(play.getAvailableSeats() + temporalSeats.getSeats().size());
@@ -47,11 +48,15 @@ public class ScheduledTasks {
 	
 	@Scheduled(fixedRate = 1000 * 60 * 10)
 	public void cleanExpiredLoginSessions() {
-		Map<String, TemporalSeats> cachedBookings = temporalBookingsRepository.getTemporalSeatsList();
+		Map<String, TemporalBooking> cachedBookings = temporalBookingsRepository.getTemporalBookingList();
 		if(MapUtils.isNotEmpty(cachedBookings))
 			cachedBookings.entrySet().stream()
-				.filter(map -> map.getValue().getInitTime().plusMinutes(30).compareTo(LocalDateTime.now()) < 0)
+				.filter(map -> timeFilter(map, 30))
 				.map(Map.Entry::getKey)
 				.forEach(temporalBookingsRepository::remove);
+	}
+
+	private boolean timeFilter(Entry<String, TemporalBooking> map, int time) {
+		return map.getValue().getInitTime().plusMinutes(time).isBefore(LocalDateTime.now());
 	}
 }

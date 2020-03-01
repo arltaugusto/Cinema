@@ -63,9 +63,9 @@ public class BookController {
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(seatRequest.getPlayPk()));
 		checkSeatAvailability(seat, play);
 		if (temporalBookingsRepository.getTemporalBookingList().containsKey(userId) && temporalBookingsRepository.getTemporalBookingByUserId(userId).getPlayPk().equals(seatRequest.getPlayPk())) {
-			TemporalBooking temporalSeat = temporalBookingsRepository.getTemporalBookingByUserId(userId);
-			checkSessionStatus(userId, temporalSeat);
-			temporalSeat.addSeat(seat);
+			TemporalBooking temporalBooking = temporalBookingsRepository.getTemporalBookingByUserId(userId);
+			checkSessionStatus(userId, temporalBooking);
+			temporalBooking.addSeat(seat);
 		} else {
 			List<Seat> userSeatList = new ArrayList<>();
 			userSeatList.add(seat);
@@ -99,8 +99,8 @@ public class BookController {
 		String userId = bookRequest.getUserId();
 		User user = BasicEntityUtils.entityFinder(userRepository.findById(userId));
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(bookRequest.getPlayPk()));
-		TemporalBooking temporalSeatsByUserId = temporalBookingsRepository.getTemporalBookingByUserId(userId);
-		List<Seat> seats = temporalSeatsByUserId.getSeats();
+		TemporalBooking temporalBooking = temporalBookingsRepository.getTemporalBookingByUserId(userId);
+		List<Seat> seats = temporalBooking.getSeats();
 		if(seats.isEmpty()) {
 			throw new NoSeatBookedException();
 		}

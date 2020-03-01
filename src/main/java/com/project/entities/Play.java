@@ -12,6 +12,8 @@ import javax.persistence.MapsId;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "plays")
 public class Play {
@@ -33,6 +35,7 @@ public class Play {
 	private Room room;
 
 	@OneToMany(mappedBy = "play")
+	@JsonIgnore
 	private List<Booking> books = new ArrayList<>();
 	
 	private boolean isActive;

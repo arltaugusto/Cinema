@@ -77,15 +77,12 @@ public class MovieController {
 	@PostMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteMovie(@RequestBody MovieDTO movieRequest) throws EntityNotFoundException {
 		Movie movie = BasicEntityUtils.entityFinder(movieRepository.findById(movieRequest.getId()));
+		movie.setActive(false);
+		movieRepository.save(movie);
 		List<Play> plays = movie.getPlays().stream()
 			.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now()))
 			.collect(Collectors.toList());
-		plays.stream()
-			.map(Play::getBooks)
-			.forEach(bookRepository::deleteAll);
 		playRepository.deleteAll(plays);
-		movie.setActive(false);
-		movieRepository.save(movie);
 		movieRepository.delete(movie);
 		return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}

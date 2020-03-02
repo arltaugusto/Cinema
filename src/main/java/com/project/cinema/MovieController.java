@@ -82,7 +82,12 @@ public class MovieController {
 		List<Play> plays = movie.getPlays().stream()
 			.filter(play -> play.getPlayPK().getStartTime().isAfter(LocalDateTime.now()))
 			.collect(Collectors.toList());
-		playRepository.deleteAll(plays);
+		if(!plays.isEmpty()) {
+			plays.forEach(play -> {
+				bookRepository.deleteAll(play.getBooks());
+				playRepository.delete(play);
+			});
+		}
 		movieRepository.delete(movie);
 		return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}

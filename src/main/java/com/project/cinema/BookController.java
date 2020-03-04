@@ -124,9 +124,6 @@ public class BookController {
 	@PostMapping(path = "/delete")
 	public @ResponseBody ResponseEntity<String> deleteBooking(@RequestBody BookingDTO book) throws EntityNotFoundException {
 			Booking booking = BasicEntityUtils.entityFinder(bookRepository.findById(book.getBookId()));
-			Play play = booking.getPlay();
-			play.setAvailableSeats(play.getAvailableSeats() + booking.getSeats().size());
-			playRepository.save(play);
 			bookRepository.delete(booking);
 			return new ResponseEntity<>("Deleted", HttpStatus.OK);
 	}

@@ -93,7 +93,7 @@ public class MovieController {
 	}
 	
 	@GetMapping(path="/all")
-	public @ResponseBody Iterable<Movie> getAllUsers() {
+	public @ResponseBody Iterable<Movie> getAllMovies() {
 		return movieRepository.findAll().stream()
 			.filter(Movie::isActive)
 			.collect(Collectors.toList());

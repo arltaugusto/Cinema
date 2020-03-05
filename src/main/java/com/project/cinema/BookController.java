@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +63,7 @@ public class BookController {
 		Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
 		Play play = BasicEntityUtils.entityFinder(playRepository.findById(seatRequest.getPlayPk()));
 		checkSeatAvailability(seat, play);
-		if (temporalBookingsRepository.getTemporalBookingList().containsKey(userId) && temporalBookingsRepository.getTemporalBookingByUserId(userId).getPlayPk().equals(seatRequest.getPlayPk())) {
+		if (StringUtils.isNotBlank(userId) && temporalBookingsRepository.getTemporalBookingList().containsKey(userId) && temporalBookingsRepository.getTemporalBookingByUserId(userId).getPlayPk().equals(seatRequest.getPlayPk())) {
 			TemporalBooking temporalBooking = temporalBookingsRepository.getTemporalBookingByUserId(userId);
 			checkSessionStatus(userId, temporalBooking);
 			temporalBooking.addSeat(seat);
@@ -79,17 +80,19 @@ public class BookController {
 	@PostMapping(path = "/removeTemporalSeat")
 	public @ResponseBody ResponseEntity<Seat> removeTemporalSeat(@RequestBody SeatRequest seatRequest) throws EntityNotFoundException, SessionTimeOutException {
 		String userId = seatRequest.getUserId();
-		TemporalBooking temporalBooking = temporalBookingsRepository.getTemporalBookingByUserId(userId);
-		checkSessionStatus(userId, temporalBooking);
-		SeatPK seatPk = new SeatPK(seatRequest.getRoomId(), seatRequest.getSeatId());
-		Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
-		Play play = BasicEntityUtils.entityFinder(playRepository.findById(seatRequest.getPlayPk()));
-		List<Seat> seats = temporalBooking.getSeats();
-		if(seats.contains(seat)) {
-			play.setAvailableSeats(play.getAvailableSeats() + 1);
-			temporalBookingsRepository.removeSeat(userId, seat);
-			playRepository.save(play);
-			return new ResponseEntity<>(seat, HttpStatus.OK);
+		if(temporalBookingsRepository.getTemporalBookingList().containsKey(userId)) {
+			TemporalBooking temporalBooking = temporalBookingsRepository.getTemporalBookingByUserId(userId);
+			checkSessionStatus(userId, temporalBooking);
+			SeatPK seatPk = new SeatPK(seatRequest.getRoomId(), seatRequest.getSeatId());
+			Seat seat = BasicEntityUtils.entityFinder(seatRepository.findById(seatPk));
+			Play play = BasicEntityUtils.entityFinder(playRepository.findById(seatRequest.getPlayPk()));
+			List<Seat> seats = temporalBooking.getSeats();
+			if(seats.contains(seat)) {
+				play.setAvailableSeats(play.getAvailableSeats() + 1);
+				temporalBookingsRepository.removeSeat(userId, seat);
+				playRepository.save(play);
+				return new ResponseEntity<>(seat, HttpStatus.OK);
+			}
 		}
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}

@@ -46,7 +46,7 @@ public class ScheduledTasks {
 		}
 	}
 	
-	@Scheduled(fixedRate = 1000 * 60 * 10)
+	@Scheduled(fixedRate = 1000 * 60 * 5)
 	public void cleanExpiredLoginSessions() {
 		Map<String, TemporalBooking> cachedBookings = temporalBookingsRepository.getTemporalBookingList();
 		if(MapUtils.isNotEmpty(cachedBookings))

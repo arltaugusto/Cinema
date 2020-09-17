@@ -14,7 +14,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
 public class JwtUtils {
-	
+
+	//FIXME this doesn't belong here
 	private String SECRET_KEY = "secret";
 	
 	public String extractUsername(String token) {
